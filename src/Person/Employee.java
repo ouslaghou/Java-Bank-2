@@ -24,7 +24,8 @@ public class Employee extends Person {
 
         System.out.println("Please enter your password");
         password = sc.nextLine();
-        checkPassword(password);
+        checkP = checkPassword(password);
+
         while (!checkP){
             System.out.println("The password you entered is incorrect");
             System.out.println("The password must contain:");
@@ -33,8 +34,9 @@ public class Employee extends Person {
             System.out.println("* 1 number");
             System.out.println("* 1 special character");
             password = sc.nextLine();
-            checkPassword(password);
+            checkP = checkPassword(password);
         }
+
 
         System.out.println("Please enter your birthdate (dd/mm/yyyy)");
         birthdate = sc.nextLine();
