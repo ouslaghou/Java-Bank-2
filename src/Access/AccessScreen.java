@@ -6,7 +6,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class AccessScreen {
-    ArrayList<User> users = new ArrayList<User>();
+    ArrayList<User> users = new ArrayList<User>();//Sirve para almacenar los objetos que usaremos
     Scanner sc = new Scanner(System.in);
     String id="";
     User dummyUser = new User(null, null, null, null);
@@ -34,7 +34,7 @@ public class AccessScreen {
                     return;
             }
         }
-
+//Bucle principal donde el usuario podrá elegir las opciones principales del cajero automático.
     }
 
     public void accountMenu(User currentUser){
@@ -47,6 +47,7 @@ public class AccessScreen {
         System.out.println("5. Recharge SIM card");
         System.out.println("6. Log Out");
         System.out.println("Please enter your numbered choice (1, 2, 3, 4, 5 or 6)");
+        //Una vez el usuario se registra o inicia sesión le saldrá el siguiente menú.
         while(option!=6){
             switch (option){
                 case 1:
@@ -73,13 +74,14 @@ public class AccessScreen {
         User currentUser =  null;
         for (int i = 0; i < users.size(); i++) {
             if(users.get(i).id.equals(id)){
-                currentUser =  users.get(i);
+                currentUser =  users.get(i);//para guardar el id creado por el usuario
             }
         }
         if (currentUser == null){
             System.out.println("Stated id is not found, please enter a valid id");
             return;
         }
+        //usuario no registrado anteriormente
         else{
             if(!currentUser.active){
                 System.out.println("The account associated with this id is blocked.\n Contact a system admin for more information.");
@@ -89,16 +91,16 @@ public class AccessScreen {
                 while (tries != 3){
                     System.out.println("Please enter password: ");
                     String pass = sc.nextLine();
-                    if(pass.equals(currentUser.password)){
+                    if(pass.equals(currentUser.password)){ //Si la contraseña que añada el usuario es la establecida anteriormente se logeará correctamente.
                         System.out.println("You have successfully logged in");
                         accountMenu(currentUser);
                     }
                     else{
-                        System.out.println("Wrong password, please try again");
-                        tries++;
+                        System.out.println("Wrong password, please try again"); //En el caso de que la contraseña sea incorrecta tendrá tres intentos para poner la correcta, si falla las tres se le bloqueará la cuenta.
+                        tries++;//Se le suman  los intentos si falla
                         if(tries == 3){
                             System.out.println("You have failed to log in, you account has been blocked.\n Please contact a system admin to resolve this issue.");
-                            currentUser.active = false;
+                            currentUser.active = false;//Se bloquea la cuenta
                         }
                     }
             }

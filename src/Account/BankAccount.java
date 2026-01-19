@@ -11,7 +11,7 @@ public abstract class BankAccount implements Accounting {
    public String accountAlias="";
    public double balance=0.0;
    int numNewAccount=0;
-   ArrayList<BankAccount> accounts=new ArrayList<BankAccount>();
+   ArrayList<BankAccount> accounts=new ArrayList<BankAccount>();//ArrayList diferente para almacenar objetos de otros archivos
    Scanner sc =new Scanner(System.in);
 
     public BankAccount(String entity, String office, String accNumber, String dc, String IBAN, String accountAlias) {
@@ -21,7 +21,7 @@ public abstract class BankAccount implements Accounting {
         this.dc = dc;
         this.IBAN = IBAN;
         this.accountAlias = accountAlias;
-        this.balance=0.0;
+        this.balance=0.0; //Métodos para almacenar información
     }
     public BankAccount(String entity, String office, String accNumber, String dc, String IBAN) {
         this.entity = entity;
@@ -30,7 +30,7 @@ public abstract class BankAccount implements Accounting {
         this.dc = dc;
         this.IBAN = IBAN;
         this.accountAlias = "Account "+ accNumber;
-        this.balance=0.0;
+        this.balance=0.0; //Métodos para almacenar información
     }
 
     public static String calcDC(String entidad, String oficina, String cuenta) {

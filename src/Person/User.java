@@ -5,20 +5,20 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class User extends Person {
+public class User extends Person { //Clase hija que hereda de la clase Person.
     public String id = "";
-    public ArrayList<BankAccount> bankAccounts = new ArrayList<>();
+    public ArrayList<BankAccount> bankAccounts = new ArrayList<>(); //Lista para almacenar todas las cuentas del banco
 
-    public User( String name, String password, String birthDate, String id) {
-        super(name, password, birthDate);
+    public User( String name, String password, String birthDate, String id) { //Clase usuario con diferentes atributos.
+        super(name, password, birthDate); //Llama al constructor padre.
         this.active=true;
         this.id = id;
     }
 
-    @Override
+    @Override //Sobreescribe la clase register
     public User register(){
         Scanner sc = new Scanner(System.in);
-        String name, birthdate, password;
+        String name, birthdate, password; //Almacena su nombre, cumpleaños y contraseña.
         boolean checkP=false, checkD=false;
         System.out.println("Please enter your name and surnames");
         name = sc.nextLine();
@@ -33,7 +33,7 @@ public class User extends Person {
             System.out.println("* 1 lowercase letter");
             System.out.println("* 1 number");
             System.out.println("* 1 special character");
-            password = sc.nextLine();
+            password = sc.nextLine(); //Se guarda la contraseña con los parámetros preestablecidos.
             checkPassword(password);
         }
 
@@ -43,7 +43,7 @@ public class User extends Person {
         while(!checkD){
             System.out.println("The date you entered is incorrect, please try again");
             System.out.println("Remember to use the following format: dd/mm/yyyy");
-            birthdate = sc.nextLine();
+            birthdate = sc.nextLine(); //Se guarda la fecha de nacimiento con el formato correcto.
             checkD = checkDate(birthdate);
         }
         id = id+1;
@@ -59,7 +59,7 @@ public class User extends Person {
 
     @Override
     public boolean checkDate(String date){
-        String regex = "[,\\.\\s]";
+        String regex = "[,\\.\\s]"; //Formato para la fecha
         String[] myArray = date.split(regex);
         int element1 = Integer.parseInt(myArray[0]);
         int element2 = Integer.parseInt(myArray[1]);
@@ -93,7 +93,7 @@ public class User extends Person {
 
     @Override
     public boolean checkPassword(String password){ //regex password
-        String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
+        String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}"; //La contraseña debe cuadrar con  el formato establecido.
         if(password.matches(pattern)){
             return true;
         }

@@ -19,6 +19,7 @@ public class DebitAccount extends BankAccount {
     }
 
     @Override
+    //Sobreescribe la clase deposit
     public void deposit(int amount, BankAccount account) {
 
         account.balance += amount;
@@ -27,7 +28,8 @@ public class DebitAccount extends BankAccount {
     }
 
     @Override
-    public void withdraw(int amount, BankAccount account) {
+    //Sobreescribe la clase whithdraw
+    public void withdraw(int amount, BankAccount account) { //Clase para extraer el dinero seleccionado indicando que cuenta del banco.
 
         if (account.balance <= 0 || account.balance - amount < 0){
             System.out.println("Insufficient funds");
@@ -39,7 +41,7 @@ public class DebitAccount extends BankAccount {
         }
     }
 
-    @Override
+    @Override //Sobreescribe la clase transfer
     public void transfer(double amount, BankAccount account) {
 
 
@@ -50,7 +52,7 @@ public class DebitAccount extends BankAccount {
             System.out.println("Please enter the amount to be transferred (With decimals)\n");
             double ammount = sc.nextDouble();
 
-            if(ammount > account.balance){
+            if(ammount > account.balance){ //Si la cantidad es mayor que lo que tienes en la cuenta del banco no se podrá hacer la transacción.
                 System.out.println("Insufficient funds");
             }
             else{
@@ -72,12 +74,12 @@ public class DebitAccount extends BankAccount {
         }
     }
 
-    @Override
+    @Override //Sobreescribe la clase rechargeSIM
     public void rechargeSIM(int amount, BankAccount account) {
         System.out.println("Input the destination phone number\n");
         try{
             String number =  sc.nextLine();
-            while( number.length() != 9){
+            while( number.length() != 9){ //Deben haber 9 dígitos sino es así será incorreto.
                 System.out.println("Please enter a valid phone number (9 digits)\n");
                 number = sc.nextLine();
             }
@@ -86,12 +88,12 @@ public class DebitAccount extends BankAccount {
         }
     }
 
-    @Override
+    @Override //Sobreescribe la clase selectAccount
     public void selectAccount(User user) {
 
         BankAccount foundBankAccount = null;
         System.out.println("Select the account you want to use by typing the number of the option");
-        for(int i = 0; i < user.bankAccounts.size(); i++) {
+        for(int i = 0; i < user.bankAccounts.size(); i++) { //Selecciona mediante un número la cuenta que busca el usuario.
             String aliasBA = user.bankAccounts.get(i).accountAlias;
             System.out.println("Option " + (i + 1) + ": " + aliasBA);
         }

@@ -7,7 +7,7 @@ public abstract class Person {
 
 
 
-    public Person( String name, String password, String birthDate) {}
+    public Person( String name, String password, String birthDate) {} //Atributos de la clase persona.
 
     abstract Person register();
 
