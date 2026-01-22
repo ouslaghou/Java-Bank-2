@@ -117,7 +117,7 @@ public abstract class BankAccount implements Accounting {
 
     /// Getters y Setters
 
-    public String getEntity(){
+    public String getEntity(){ //*Esto devuelve la entidad
         return this.entity;
 
     }

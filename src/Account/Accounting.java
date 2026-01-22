@@ -2,6 +2,7 @@ package Account;
 
 import Person.User;
 
+
 interface Accounting
 {
     void deposit(int amount, BankAccount account);

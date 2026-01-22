@@ -7,7 +7,11 @@ public abstract class Person {
 
 
 
-    public Person( String name, String password, String birthDate) {} //Atributos de la clase persona.
+    public Person( String name, String password, String birthDate) { //Atributos de la clase persona.
+        this.name = name;
+        this.password = password;
+        this.birthDate = birthDate;
+    }
 
     abstract Person register();
 
