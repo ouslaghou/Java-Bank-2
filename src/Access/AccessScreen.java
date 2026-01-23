@@ -1,9 +1,13 @@
 package Access;
 
+import Account.BankAccount;
+import Account.DebitAccount;
 import Person.Employee;
 import Person.Manager;
 import Person.User;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,6 +21,19 @@ public class AccessScreen {
     public AccessScreen() {
         users.add(new Manager("Admin", "Admin123!", "01/01/1980", "00000001"));
         users.add(new Employee("Empleado1", "Empleado123!", "01/01/1990", 1));
+        users.add(new Employee("Empleado2", "Empleado123!", "01/01/1990", 2));
+        users.add(new Employee("Empleado3", "Empleado123!", "01/01/1990", 3));
+
+        for (int i = 1; i <= 5; i++) {
+            String cid = String.format("%08d", 100 + i);
+            User c = new User("Cliente" + i, "Cliente123!", "01/01/1995", cid);
+            users.add(c);
+            String accNumber = String.format("%010d", i);
+            String dc = BankAccount.calcDC("9999", "8888", accNumber);
+            String iban = BankAccount.calcIBAN("9999", "8888", accNumber);
+            BankAccount account = new DebitAccount("9999", "8888", accNumber, dc, iban, "CuentaCliente" + i);
+            c.bankAccounts.add(account);
+        }
     }
 
     public void menu() {
@@ -41,6 +58,8 @@ public class AccessScreen {
                     login();
                     break;
                 case 3:
+                    savePersons();
+                    saveAccounts();
                     return;
             }
         }
@@ -140,6 +159,24 @@ public class AccessScreen {
 
             option = sc.nextInt();
             sc.nextLine();
+        }
+    }
+
+    private void savePersons() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("personas.dat"))) {
+            out.writeObject(users);
+        } catch (Exception e) {
+        }
+    }
+
+    private void saveAccounts() {
+        ArrayList<BankAccount> accounts = new ArrayList<>();
+        for (User u : users) {
+            accounts.addAll(u.bankAccounts);
+        }
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("cuentas.dat"))) {
+            out.writeObject(accounts);
+        } catch (Exception e) {
         }
     }
 }
