@@ -1,14 +1,17 @@
 package Person;
 
 import Account.BankAccount;
+import java.io.Serializable;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class User extends Person {
+public class User extends Person implements Serializable {
 
     public String id = "";
     public ArrayList<BankAccount> bankAccounts = new ArrayList<>();
+
+    public static int lastId = 0; // Control global de IDs
 
     public User(String name, String password, String birthDate, String id) {
         super(name, password, birthDate);
@@ -53,10 +56,9 @@ public class User extends Person {
             checkD = checkDate(birthdate);
         }
 
-        // FIX: increment numeric ID correctly
-        int numericId = Integer.parseInt(this.id);
-        numericId++;
-        String newId = String.format("%08d", numericId);
+        // ID AUTOINCREMENTAL SEGURO
+        lastId++;
+        String newId = String.format("%08d", lastId);
 
         User newUser = new User(name, password, birthdate, newId);
 
@@ -72,41 +74,46 @@ public class User extends Person {
 
     @Override
     public boolean checkDate(String date) {
-        String regex = "[,\\.\\s]";
-        String[] myArray = date.split(regex);
-        int element1 = Integer.parseInt(myArray[0]);
-        int element2 = Integer.parseInt(myArray[1]);
-        int element3 = Integer.parseInt(myArray[2]);
-        int year = Year.now().getValue();
 
-        if (element1 > 31 || element1 < 1) {
+        String regex = "[/.,\\s]";
+        String[] myArray = date.split(regex);
+
+        if (myArray.length != 3) {
             return false;
         }
-        if (element2 == 4 || element2 == 6 || element2 == 9 || element2 == 11) {
-            if (element1 > 30) {
-                return false;
-            }
-        }
-        if (element2 == 2) {
-            if (element3 % 4 == 0) {
-                if (element1 > 29) {
-                    return false;
-                }
-            } else {
-                if (element1 > 28) {
-                    return false;
-                }
-            }
-        }
-        if (element3 < 1900 || element3 > year) {
+
+        int day, month, yearInput;
+
+        try {
+            day = Integer.parseInt(myArray[0]);
+            month = Integer.parseInt(myArray[1]);
+            yearInput = Integer.parseInt(myArray[2]);
+        } catch (NumberFormatException e) {
             return false;
         }
+
+        int currentYear = Year.now().getValue();
+
+        if (day < 1 || day > 31) return false;
+        if (month < 1 || month > 12) return false;
+
+        if (month == 4 || month == 6 || month == 9 || month == 11)
+            if (day > 30) return false;
+
+        if (month == 2) {
+            boolean leap = (yearInput % 4 == 0);
+            if (leap && day > 29) return false;
+            if (!leap && day > 28) return false;
+        }
+
+        if (yearInput < 1900 || yearInput > currentYear) return false;
+
         return true;
     }
 
     @Override
     public boolean checkPassword(String password) {
-        String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
+        String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^*/&+=])(?=\\S+$).{8,}";
         return password.matches(pattern);
     }
 }
