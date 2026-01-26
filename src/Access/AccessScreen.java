@@ -8,9 +8,8 @@ import java.util.ArrayList;
 public class AccessScreen {
     ArrayList<User> users = new ArrayList<User>();
     Scanner sc = new Scanner(System.in);
-    String id="";
+    String id=Math.random()+"";
     User dummyUser = new User(null, null, null, null);
-
     public void menu(){
 
         int option=0;
