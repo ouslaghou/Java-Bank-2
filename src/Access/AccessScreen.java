@@ -69,6 +69,7 @@ public class AccessScreen {
     public void login(){
         System.out.println("Please enter user id: ");
         id = sc.nextLine();
+        String id = sc.nextLine();
         User currentUser =  null;
         for (int i = 0; i < users.size(); i++) {
             if(users.get(i).id.equals(id)){
@@ -77,7 +78,6 @@ public class AccessScreen {
         }
         if (currentUser == null){
             System.out.println("Stated id is not found, please enter a valid id");
-            return;
         }
         else{
             if(!currentUser.active){
@@ -86,9 +86,10 @@ public class AccessScreen {
             else{
                 int tries = 0;
                 while (tries != 3){
+                    sc.nextLine();
                     System.out.println("Please enter password: ");
-                    String pass = sc.nextLine();
-                    if(pass.equals(currentUser.password)){
+                    String password = sc.nextLine();
+                    if(password.equals(currentUser.password)){
                         System.out.println("You have successfully logged in");
                         accountMenu(currentUser);
                     }
