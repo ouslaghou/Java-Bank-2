@@ -1,6 +1,5 @@
 package Account;
 
-import Exceptions.InputNumberException;
 import Person.User;
 
 
@@ -22,6 +21,7 @@ public class DebitAccount extends BankAccount {
     public void deposit(int amount, BankAccount account) {
 
         account.balance += amount;
+        account.lastDeposit = amount;
         System.out.println("Deposited " + amount);
         System.out.println("New Balance: " + account.balance);
     }
@@ -34,6 +34,7 @@ public class DebitAccount extends BankAccount {
         }
         else{
             account.balance -= amount;
+            account.lastDeposit = amount;
             System.out.println("Operation successful");
             System.out.println("New balance in " + account.accNumber + " is: " + account.balance);
         }
@@ -105,6 +106,15 @@ public class DebitAccount extends BankAccount {
         catch (InputMismatchException e) {
             System.out.println(e.getMessage());
         }
-
     }
+
+    @Override
+    public void movimientos(int amount, BankAccount account, String balance) {
+        System.out.println("Historial de movimientos");
+        System.out.println("-------------------------");
+        System.out.println("Has depositado: " + account.lastDeposit);
+        System.out.println("Has retirado: " + account.lastWithdrawal );
+        System.out.println("Has transferido: "  );
+    }
+
 }

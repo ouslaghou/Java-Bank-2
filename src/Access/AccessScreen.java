@@ -45,8 +45,9 @@ public class AccessScreen {
         System.out.println("3. Withdraw");
         System.out.println("4. Transfer Money");
         System.out.println("5. Recharge SIM card");
-        System.out.println("6. Log Out");
-        System.out.println("Please enter your numbered choice (1, 2, 3, 4, 5 or 6)");
+        System.out.println("6. Transaction history");
+        System.out.println("7. Log Out");
+        System.out.println("Please enter your numbered choice (1, 2, 3, 4, 5, 6 or 7)");
         while(option!=6){
             switch (option){
                 case 1:
@@ -62,6 +63,8 @@ public class AccessScreen {
                 case 5:
                     return;
                 case 6:
+                    return;
+                case 7:
                     return;
             }
         }

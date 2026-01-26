@@ -159,4 +159,9 @@ public abstract class BankAccount implements Accounting {
     public void setBalance(double balance) {
         this.balance = balance;
     }
-  }
+
+    public int lastWithdrawal;
+    public int lastDeposit;
+
+    public abstract void movimientos(int amount, BankAccount account, String balance);
+}

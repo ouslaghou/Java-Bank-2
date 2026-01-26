@@ -41,4 +41,9 @@ public class CreditAccount extends BankAccount {
     public void selectAccount(User user) {
 
     }
+
+    @Override
+    public void movimientos(int amount, BankAccount account, String balance) {
+
+    }
 }
