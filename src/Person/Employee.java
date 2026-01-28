@@ -1,10 +1,9 @@
 package Person;
 
-import Account.BankAccount;
 import java.time.Year;
 import java.util.Scanner;
 
-public class Employee extends Person {
+public class Employee extends User {
 
     final int employeeId;
     public static int id = 0;
@@ -12,6 +11,7 @@ public class Employee extends Person {
     public Employee(String name, String password, String birthDate, int employeeId) {
         super(name, password, birthDate);
         this.employeeId = employeeId;
+        this.role = "employee";
     }
 
     @Override
@@ -52,7 +52,7 @@ public class Employee extends Person {
         id++;
         String newId = createId(id);
 
-        User newUser = new User(name, password, birthdate, newId);
+        User newUser = new User(name, password, birthdate);
 
         System.out.println("The register process has ended");
         System.out.println("Your data:");

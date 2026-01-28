@@ -13,10 +13,9 @@ public class User extends Person implements Serializable {
 
     public static int lastId = 0; // Control global de IDs
 
-    public User(String name, String password, String birthDate, String id) {
+    public User(String name, String password, String birthDate) {
         super(name, password, birthDate);
         this.active = true;
-        this.id = id;
     }
 
     @Override
@@ -56,20 +55,24 @@ public class User extends Person implements Serializable {
             checkD = checkDate(birthdate);
         }
 
-        // ID AUTOINCREMENTAL SEGURO
-        lastId++;
+
+
         String newId = String.format("%08d", lastId);
 
-        User newUser = new User(name, password, birthdate, newId);
+        this.name = name;
+        this.password = password;
+        this.birthDate = birthdate;
+        this.id = String.format("%08d", ++lastId);
+
 
         System.out.println("The register process has ended");
         System.out.println("Your data:");
-        System.out.println("Name: " + name);
-        System.out.println("Birthdate: " + birthdate);
-        System.out.println("Password: " + password);
-        System.out.println("Id: " + newId);
+        System.out.println("Name: " + this.name);
+        System.out.println("Birthdate: " + this.birthDate);
+        System.out.println("Password: " + this.password);
+        System.out.println("Id: " + this.id);
 
-        return newUser;
+        return this;
     }
 
     @Override
