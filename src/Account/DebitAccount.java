@@ -1,120 +1,73 @@
 package Account;
 
-import Person.User;
+import Access.FileManager;
 
-
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class DebitAccount extends BankAccount {
 
-    Scanner sc  = new Scanner(System.in);
+    Scanner sc = new Scanner(System.in);
 
-    public DebitAccount(String entity, String office, String accNumber, String dc, String IBAN, String accountAlias) {
-        super(entity, office, accNumber, dc, IBAN, accountAlias);
-    }
-    public DebitAccount(String entity, String office, String accNumber, String dc, String IBAN) {
-        super(entity, office, accNumber, dc, IBAN);
+    public DebitAccount(String ownerId, String entity, String office, String accNumber, String dc, String IBAN, String alias) {
+        super(ownerId, entity, office, accNumber, dc, IBAN, alias);
     }
 
     @Override
     public void deposit(int amount, BankAccount account) {
-
         account.balance += amount;
         account.lastDeposit = amount;
         System.out.println("Deposited " + amount);
-        System.out.println("New Balance: " + account.balance);
     }
 
     @Override
     public void withdraw(int amount, BankAccount account) {
-
-        if (account.balance <= 0 || account.balance - amount < 0){
+        if (amount > account.balance) {
             System.out.println("Insufficient funds");
+            return;
         }
-        else{
-            account.balance -= amount;
-            account.lastDeposit = amount;
-            System.out.println("Operation successful");
-            System.out.println("New balance in " + account.accNumber + " is: " + account.balance);
-        }
+        account.balance -= amount;
+        account.lastWithdrawal = amount;
+        System.out.println("Withdraw successful");
     }
 
     @Override
     public void transfer(double amount, BankAccount account) {
+        System.out.println("Enter destination account number:");
+        String dest = sc.nextLine();
 
+        BankAccount destAcc = null;
 
-        try{
-            String sourceAcc =  account.accNumber;
-            System.out.println("Please enter the destination account number\n");
-            String destinationAcc =  sc.nextLine();
-            System.out.println("Please enter the amount to be transferred (With decimals)\n");
-            double ammount = sc.nextDouble();
-
-            if(ammount > account.balance){
-                System.out.println("Insufficient funds");
-            }
-            else{
-                account.balance -= ammount;
-                BankAccount destAcc = null;
-                for(int i = 0; i < accounts.size(); i++){
-                    if(accounts.get(i).accNumber.equals(destinationAcc)){
-                        accounts.get(i).balance += ammount;
-                        destAcc = accounts.get(i);
-                    }
-                }
-                System.out.println("Operation successful");
-                System.out.println("New balance in " + sourceAcc + " is: " + account.balance);
-                System.out.println("New balance in " + destinationAcc + " is: " + destAcc.balance);
+        for (BankAccount ba : FileManager.accounts) {
+            if (ba.accNumber.equals(dest)) {
+                destAcc = ba;
+                break;
             }
         }
-        catch(InputMismatchException e){
-            System.out.println(e.getMessage());
+
+        if (destAcc == null) {
+            System.out.println("Destination account not found");
+            return;
         }
+
+        if (amount > account.balance) {
+            System.out.println("Insufficient funds");
+            return;
+        }
+
+        account.balance -= amount;
+        destAcc.balance += amount;
+
+        System.out.println("Transfer successful");
     }
 
     @Override
     public void rechargeSIM(int amount, BankAccount account) {
-        System.out.println("Input the destination phone number\n");
-        try{
-            String number =  sc.nextLine();
-            while( number.length() != 9){
-                System.out.println("Please enter a valid phone number (9 digits)\n");
-                number = sc.nextLine();
-            }
-        } catch (InputMismatchException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @Override
-    public void selectAccount(User user) {
-
-        BankAccount foundBankAccount = null;
-        System.out.println("Select the account you want to use by typing the number of the option");
-        for(int i = 0; i < user.bankAccounts.size(); i++) {
-            String aliasBA = user.bankAccounts.get(i).accountAlias;
-            System.out.println("Option " + (i + 1) + ": " + aliasBA);
-        }
-        try {
-            int option = sc.nextInt();
-            sc.nextLine();
-            foundBankAccount = user.bankAccounts.get(option - 1);
-            System.out.println("Selected account: " + foundBankAccount.accNumber + " Balance: " + foundBankAccount.balance);
-
-        }
-        catch (InputMismatchException e) {
-            System.out.println(e.getMessage());
-        }
+        System.out.println("SIM recharge done");
     }
 
     @Override
     public void movimientos(int amount, BankAccount account, String balance) {
-        System.out.println("Historial de movimientos");
-        System.out.println("-------------------------");
-        System.out.println("Has depositado: " + account.lastDeposit);
-        System.out.println("Has retirado: " + account.lastWithdrawal );
-        System.out.println("Has transferido: "  );
+        System.out.println("Last deposit: " + account.lastDeposit);
+        System.out.println("Last withdrawal: " + account.lastWithdrawal);
     }
-
 }

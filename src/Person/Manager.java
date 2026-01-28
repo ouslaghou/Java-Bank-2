@@ -1,24 +1,20 @@
 package Person;
 
-import Account.BankAccount;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Scanner;
 
-public class User extends Person implements Serializable {
+public class Manager extends Person {
 
-    public ArrayList<BankAccount> bankAccounts = new ArrayList<>();
-    public static int lastId = 0;
+    public static int lastManagerId = 0;
 
-    public User(String name, String password, String birthDate) {
-        super(name, password, birthDate, "client");
+    public Manager(String name, String password, String birthDate) {
+        super(name, password, birthDate, "manager");
     }
 
     @Override
     public Person register() {
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Enter client name:");
+        System.out.println("Enter manager name:");
         this.name = sc.nextLine();
 
         System.out.println("Enter password:");
@@ -27,7 +23,7 @@ public class User extends Person implements Serializable {
         System.out.println("Enter birthdate:");
         this.birthDate = sc.nextLine();
 
-        this.id = String.format("%07d", ++lastId);
+        this.id = "M" + String.format("%06d", ++lastManagerId);
 
         return this;
     }

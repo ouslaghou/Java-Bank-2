@@ -1,113 +1,419 @@
 package Access;
-import Person.User;
 
+import Person.*;
+import Account.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-import java.util.ArrayList;
-
 public class AccessScreen {
-    ArrayList<User> users = new ArrayList<User>();
+
+    ArrayList<Person> persons;
     Scanner sc = new Scanner(System.in);
-    String id="";
-    User dummyUser = new User(null, null, null, null);
 
-    public void menu(){
+    public AccessScreen() {
+        persons = FileManager.loadPersons();
+        FileManager.loadAccounts();
+        linkAccountsToUsers();
+        rebuildLastIds();   // ⭐ RECONSTRUYE LOS IDs AL INICIAR
+    }
 
-        int option=0;
-        while(option!=3){
-            System.out.println("Welcome to JavaBank ");
-            System.out.println("1. Create Account");
+    // ============================
+    // RECONSTRUIR IDs DESDE FICHERO
+    // ============================
+    private void rebuildLastIds() {
+        int maxClient = 0;
+        int maxEmployee = 0;
+        int maxManager = 0;
+
+        for (Person p : persons) {
+
+            if (p.role.equals("client")) {
+                int num = Integer.parseInt(p.id);
+                if (num > maxClient) maxClient = num;
+            }
+
+            if (p.role.equals("employee")) {
+                int num = Integer.parseInt(p.id.substring(1));
+                if (num > maxEmployee) maxEmployee = num;
+            }
+
+            if (p.role.equals("manager")) {
+                int num = Integer.parseInt(p.id.substring(1));
+                if (num > maxManager) maxManager = num;
+            }
+        }
+
+        User.lastId = maxClient;
+        Employee.lastEmployeeId = maxEmployee;
+        Manager.lastManagerId = maxManager;
+    }
+
+    // ============================
+    // VINCULAR CUENTAS A USUARIOS
+    // ============================
+    private void linkAccountsToUsers() {
+        for (BankAccount acc : FileManager.accounts) {
+            for (Person p : persons) {
+                if (p instanceof User && p.id.equals(acc.ownerId)) {
+                    ((User) p).bankAccounts.add(acc);
+                }
+            }
+        }
+    }
+
+    // ============================
+    // MENÚ PRINCIPAL
+    // ============================
+    public void menu() {
+
+        int option = 0;
+
+        while (option != 3) {
+            System.out.println("\n=== JAVA BANK ===");
+            System.out.println("1. Register User");
             System.out.println("2. Log In");
-            System.out.println("3. Close Application");
-            System.out.println("Please enter your numbered choice (1, 2 or 3)");
+            System.out.println("3. Exit");
+
             option = sc.nextInt();
-            switch (option){
-                case 1:
-                    User newUser = dummyUser.register();
-                    users.add(newUser);
+            sc.nextLine();
 
-                    break;
-                case 2:
-                    login();
-                    break;
-                case 3:
-                    return;
-            }
-        }
-
-    }
-
-    public void accountMenu(User currentUser){
-        int option=0;
-        System.out.println("Welcome " + currentUser.name);
-        System.out.println("1. Create BankAccount");
-        System.out.println("2. Make a deposit");
-        System.out.println("3. Withdraw");
-        System.out.println("4. Transfer Money");
-        System.out.println("5. Recharge SIM card");
-        System.out.println("6. Transaction history");
-        System.out.println("7. Log Out");
-        System.out.println("Please enter your numbered choice (1, 2, 3, 4, 5, 6 or 7)");
-        while(option!=6){
-            switch (option){
-                case 1:
-                  //bankAccount  newBA = new bankAccount(dummyBankAccount.getEntity(), dummyBankAccount.getOffice(),  dummyBankAccount.calcDC(), null, null, null);
-                    break;
-                case 2:
-                    login();
-                    break;
-                case 3:
-                    return;
-                case 4:
-                    return;
-                case 5:
-                    return;
-                case 6:
-                    return;
-                case 7:
-                    return;
+            switch (option) {
+                case 1 -> registerUser();
+                case 2 -> login();
+                case 3 -> {
+                    FileManager.savePersons(persons);
+                    FileManager.saveAccounts();
+                    System.out.println("Data saved. Goodbye.");
+                }
             }
         }
     }
 
-    public void login(){
-        System.out.println("Please enter user id: ");
-        id = sc.nextLine();
-        User currentUser =  null;
-        for (int i = 0; i < users.size(); i++) {
-            if(users.get(i).id.equals(id)){
-                currentUser =  users.get(i);
+    // ============================
+    // REGISTRO DE USUARIOS
+    // ============================
+    private void registerUser() {
+        System.out.println("\nSelect user type:");
+        System.out.println("1. Client");
+        System.out.println("2. Employee");
+        System.out.println("3. Manager");
+
+        int type = sc.nextInt();
+        sc.nextLine();
+
+        Person p;
+
+        if (type == 1) p = new User("", "", "");
+        else if (type == 2) p = new Employee("", "", "");
+        else p = new Manager("", "", "");
+
+        p = p.register();
+        persons.add(p);
+
+        FileManager.savePersons(persons);
+        System.out.println("User registered successfully. ID: " + p.id);
+    }
+
+    // ============================
+    // LOGIN
+    // ============================
+    private void login() {
+        System.out.println("\nEnter ID:");
+        String id = sc.nextLine();
+
+        Person p = null;
+
+        for (Person x : persons) {
+            if (x.id.equals(id)) {
+                p = x;
+                break;
             }
         }
-        if (currentUser == null){
-            System.out.println("Stated id is not found, please enter a valid id");
+
+        if (p == null) {
+            System.out.println("ID not found.");
             return;
         }
-        else{
-            if(!currentUser.active){
-                System.out.println("The account associated with this id is blocked.\n Contact a system admin for more information.");
-            }
-            else{
-                int tries = 0;
-                while (tries != 3){
-                    System.out.println("Please enter password: ");
-                    String pass = sc.nextLine();
-                    if(pass.equals(currentUser.password)){
-                        System.out.println("You have successfully logged in");
-                        accountMenu(currentUser);
-                    }
-                    else{
-                        System.out.println("Wrong password, please try again");
-                        tries++;
-                        if(tries == 3){
-                            System.out.println("You have failed to log in, you account has been blocked.\n Please contact a system admin to resolve this issue.");
-                            currentUser.active = false;
-                        }
-                    }
-            }
 
-            }
+        System.out.println("Enter password:");
+        String pass = sc.nextLine();
 
+        if (!pass.equals(p.password)) {
+            System.out.println("Wrong password.");
+            return;
         }
+
+        System.out.println("Login successful. Welcome " + p.name + " (" + p.id + ")");
+
+        switch (p.role) {
+            case "manager" -> managerMenu((Manager) p);
+            case "employee" -> employeeMenu((Employee) p);
+            case "client" -> clientMenu((User) p);
+        }
+    }
+
+    // ============================
+    // MENÚ GERENTE
+    // ============================
+    private void managerMenu(Manager m) {
+        int option = 0;
+
+        while (option != 7) {
+            System.out.println("\n=== MANAGER MENU ===");
+            System.out.println("1. Create Client");
+            System.out.println("2. Create Employee");
+            System.out.println("3. Create Manager");
+            System.out.println("4. Create Bank Account");
+            System.out.println("5. View All Users");
+            System.out.println("6. Block User");
+            System.out.println("7. Logout");
+
+            option = sc.nextInt();
+            sc.nextLine();
+
+            switch (option) {
+                case 1 -> createClient();
+                case 2 -> createEmployee();
+                case 3 -> createManager();
+                case 4 -> createBankAccount();
+                case 5 -> showAllUsers();
+                case 6 -> blockUser();
+                case 7 -> {
+                    FileManager.savePersons(persons);
+                    FileManager.saveAccounts();
+                    return;
+                }
+            }
+        }
+    }
+
+    // ============================
+    // MENÚ EMPLEADO
+    // ============================
+    private void employeeMenu(Employee e) {
+        int option = 0;
+
+        while (option != 5) {
+            System.out.println("\n=== EMPLOYEE MENU ===");
+            System.out.println("1. Create Client");
+            System.out.println("2. Create Bank Account");
+            System.out.println("3. View Clients");
+            System.out.println("4. Block Client");
+            System.out.println("5. Logout");
+
+            option = sc.nextInt();
+            sc.nextLine();
+
+            switch (option) {
+                case 1 -> createClient();
+                case 2 -> createBankAccount();
+                case 3 -> showClients();
+                case 4 -> blockClient();
+                case 5 -> {
+                    FileManager.savePersons(persons);
+                    FileManager.saveAccounts();
+                    return;
+                }
+            }
+        }
+    }
+
+    // ============================
+    // MENÚ CLIENTE
+    // ============================
+    private void clientMenu(User u) {
+        int option = 0;
+
+        while (option != 5) {
+            System.out.println("\n=== CLIENT MENU ===");
+            System.out.println("1. View My Accounts");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Transfer");
+            System.out.println("5. Logout");
+
+            option = sc.nextInt();
+            sc.nextLine();
+
+            switch (option) {
+                case 1 -> showUserAccounts(u);
+                case 2 -> deposit(u);
+                case 3 -> withdraw(u);
+                case 4 -> transfer(u);
+                case 5 -> {
+                    FileManager.savePersons(persons);
+                    FileManager.saveAccounts();
+                    return;
+                }
+            }
+        }
+    }
+
+    // ============================
+    // CREAR USUARIOS
+    // ============================
+    private void createClient() {
+        Person p = new User("", "", "").register();
+        persons.add(p);
+        FileManager.savePersons(persons);
+        System.out.println("Client created. ID: " + p.id);
+    }
+
+    private void createEmployee() {
+        Person p = new Employee("", "", "").register();
+        persons.add(p);
+        FileManager.savePersons(persons);
+        System.out.println("Employee created. ID: " + p.id);
+    }
+
+    private void createManager() {
+        Person p = new Manager("", "", "").register();
+        persons.add(p);
+        FileManager.savePersons(persons);
+        System.out.println("Manager created. ID: " + p.id);
+    }
+
+    // ============================
+    // CREAR CUENTAS
+    // ============================
+    private void createBankAccount() {
+        System.out.println("Enter owner ID:");
+        String id = sc.nextLine();
+
+        Person p = null;
+
+        for (Person x : persons) {
+            if (x.id.equals(id) && x instanceof User) {
+                p = x;
+                break;
+            }
+        }
+
+        if (p == null) {
+            System.out.println("Client not found.");
+            return;
+        }
+
+        System.out.println("Enter account number:");
+        String acc = sc.nextLine();
+
+        BankAccount newAcc = new DebitAccount(
+                p.id, "9999", "8888", acc, "00", "ES00" + acc, "Account " + acc
+        );
+
+        ((User) p).bankAccounts.add(newAcc);
+        FileManager.accounts.add(newAcc);
+
+        FileManager.saveAccounts();
+        FileManager.savePersons(persons);
+
+        System.out.println("Account created for user " + p.name + " (" + p.id + ")");
+    }
+
+    // ============================
+    // MOSTRAR USUARIOS
+    // ============================
+    private void showAllUsers() {
+        System.out.println("\n=== LIST OF ALL USERS ===");
+
+        for (Person p : persons) {
+            System.out.println(
+                    "ID: " + p.id +
+                            " | Name: " + p.name +
+                            " | Role: " + p.role +
+                            " | Active: " + (p.active ? "YES" : "NO")
+            );
+        }
+    }
+
+    private void showClients() {
+        System.out.println("\n=== CLIENT LIST ===");
+
+        for (Person p : persons) {
+            if (p.role.equals("client")) {
+                System.out.println("ID: " + p.id + " | Name: " + p.name);
+            }
+        }
+    }
+
+    private void showUserAccounts(User u) {
+        System.out.println("\n=== ACCOUNTS OF " + u.name + " (" + u.id + ") ===");
+
+        for (BankAccount acc : u.bankAccounts) {
+            System.out.println(
+                    acc.accountAlias + " | " +
+                            acc.accNumber + " | Balance: " + acc.balance
+            );
+        }
+    }
+
+    // ============================
+    // BLOQUEAR USUARIOS
+    // ============================
+    private void blockUser() {
+        System.out.println("Enter ID to block:");
+        String id = sc.nextLine();
+
+        for (Person p : persons) {
+            if (p.id.equals(id)) {
+                p.active = false;
+                System.out.println("User blocked: " + p.id);
+                return;
+            }
+        }
+        System.out.println("User not found.");
+    }
+
+    private void blockClient() {
+        System.out.println("Enter client ID to block:");
+        String id = sc.nextLine();
+
+        for (Person p : persons) {
+            if (p.id.equals(id) && p.role.equals("client")) {
+                p.active = false;
+                System.out.println("Client blocked: " + p.id);
+                return;
+            }
+        }
+        System.out.println("Client not found.");
+    }
+
+    // ============================
+    // OPERACIONES CLIENTE
+    // ============================
+    private BankAccount selectAccount(User u) {
+        System.out.println("\nSelect account for user " + u.name + " (" + u.id + "):");
+
+        for (int i = 0; i < u.bankAccounts.size(); i++) {
+            System.out.println((i + 1) + ". " + u.bankAccounts.get(i).accountAlias);
+        }
+
+        int opt = sc.nextInt();
+        sc.nextLine();
+        return u.bankAccounts.get(opt - 1);
+    }
+
+    private void deposit(User u) {
+        BankAccount acc = selectAccount(u);
+        System.out.println("Amount:");
+        int amount = sc.nextInt();
+        sc.nextLine();
+        acc.deposit(amount, acc);
+    }
+
+    private void withdraw(User u) {
+        BankAccount acc = selectAccount(u);
+        System.out.println("Amount:");
+        int amount = sc.nextInt();
+        sc.nextLine();
+        acc.withdraw(amount, acc);
+    }
+
+    private void transfer(User u) {
+        BankAccount acc = selectAccount(u);
+        System.out.println("Amount:");
+        double amount = sc.nextDouble();
+        sc.nextLine();
+        acc.transfer(amount, acc);
     }
 }
