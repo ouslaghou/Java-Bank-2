@@ -1,113 +1,171 @@
 package Access;
-import Person.User;
 
+import Person.User;
+import Person.Employee;
+import Person.Manager;
+
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-import java.util.ArrayList;
-
 public class AccessScreen {
-    ArrayList<User> users = new ArrayList<User>();
+
+    ArrayList<User> users = new ArrayList<>();
     Scanner sc = new Scanner(System.in);
-    String id="";
-    User dummyUser = new User(null, null, null, null);
 
-    public void menu(){
+    public void menu() {
 
-        int option=0;
-        while(option!=3){
+        loadUsersFromFile();
+        System.out.println(new File("usuarios.dat").getAbsolutePath());
+        fixLastId();
+
+        int option = 0;
+
+        while (option != 3) {
             System.out.println("Welcome to JavaBank ");
             System.out.println("1. Create Account");
             System.out.println("2. Log In");
             System.out.println("3. Close Application");
-            System.out.println("Please enter your numbered choice (1, 2 or 3)");
-            option = sc.nextInt();
-            switch (option){
-                case 1:
-                    User newUser = dummyUser.register();
-                    users.add(newUser);
 
+            option = Integer.parseInt(sc.nextLine());
+
+
+            switch (option) {
+                case 1:
+                    createUser();
                     break;
+
                 case 2:
                     login();
                     break;
-                case 3:
-                    return;
-            }
-        }
 
-    }
-
-    public void accountMenu(User currentUser){
-        int option=0;
-        System.out.println("Welcome " + currentUser.name);
-        System.out.println("1. Create BankAccount");
-        System.out.println("2. Make a deposit");
-        System.out.println("3. Withdraw");
-        System.out.println("4. Transfer Money");
-        System.out.println("5. Recharge SIM card");
-        System.out.println("6. Transaction history");
-        System.out.println("7. Log Out");
-        System.out.println("Please enter your numbered choice (1, 2, 3, 4, 5, 6 or 7)");
-        while(option!=6){
-            switch (option){
-                case 1:
-                  //bankAccount  newBA = new bankAccount(dummyBankAccount.getEntity(), dummyBankAccount.getOffice(),  dummyBankAccount.calcDC(), null, null, null);
-                    break;
-                case 2:
-                    login();
-                    break;
                 case 3:
-                    return;
-                case 4:
-                    return;
-                case 5:
-                    return;
-                case 6:
-                    return;
-                case 7:
+                    saveUsersToFile();
                     return;
             }
         }
     }
 
-    public void login(){
-        System.out.println("Please enter user id: ");
-        id = sc.nextLine();
-        User currentUser =  null;
-        for (int i = 0; i < users.size(); i++) {
-            if(users.get(i).id.equals(id)){
-                currentUser =  users.get(i);
+    private void createUser() {
+        System.out.println("Select user type:");
+        System.out.println("1. Client");
+        System.out.println("2. Employee");
+        System.out.println("3. Manager");
+
+        int type = Integer.parseInt(sc.nextLine());
+
+
+        User newUser;
+
+        if (type == 1) newUser = new User();
+        else if (type == 2) newUser = new Employee();
+        else newUser = new Manager();
+
+        newUser = newUser.register();
+        users.add(newUser);
+
+        saveUsersToFile();
+        fixLastId();
+    }
+
+    public void login() {
+        System.out.println("Enter user ID:");
+        String id = sc.nextLine();
+
+        User currentUser = null;
+
+        for (User u : users) {
+            if (u.id.equals(id)) {
+                currentUser = u;
+                break;
             }
         }
-        if (currentUser == null){
-            System.out.println("Stated id is not found, please enter a valid id");
+
+        if (currentUser == null) {
+            System.out.println("ID not found.");
             return;
         }
-        else{
-            if(!currentUser.active){
-                System.out.println("The account associated with this id is blocked.\n Contact a system admin for more information.");
-            }
-            else{
-                int tries = 0;
-                while (tries != 3){
-                    System.out.println("Please enter password: ");
-                    String pass = sc.nextLine();
-                    if(pass.equals(currentUser.password)){
-                        System.out.println("You have successfully logged in");
-                        accountMenu(currentUser);
-                    }
-                    else{
-                        System.out.println("Wrong password, please try again");
-                        tries++;
-                        if(tries == 3){
-                            System.out.println("You have failed to log in, you account has been blocked.\n Please contact a system admin to resolve this issue.");
-                            currentUser.active = false;
-                        }
-                    }
-            }
 
-            }
-
+        if (!currentUser.active) {
+            System.out.println("Account blocked.");
+            return;
         }
+
+
+        System.out.println("Enter password:");
+        String pass = sc.nextLine().trim();
+        System.out.println("DEBUG stored password = [" + currentUser.password + "]"); System.out.println("DEBUG typed password = [" + pass + "]"); System.out.println("DEBUG equals? " + pass.equals(currentUser.password));
+
+        if (!pass.equals(currentUser.password)) {
+            System.out.println("Wrong password.");
+            return;
+        }
+
+        accountMenu(currentUser);
+    }
+
+    public void accountMenu(User currentUser) {
+
+        System.out.println("Welcome " + currentUser.name);
+        System.out.println("Role: " + currentUser.role);
+
+        switch (currentUser.role) {
+            case "manager":
+                managerMenu(currentUser);
+                break;
+
+            case "employee":
+                employeeMenu(currentUser);
+                break;
+
+            default:
+                userMenu(currentUser);
+        }
+    }
+
+    private void managerMenu(User u) {
+        System.out.println("Manager menu (not implemented)");
+    }
+
+    private void employeeMenu(User u) {
+        System.out.println("Employee menu (not implemented)");
+    }
+
+    private void userMenu(User u) {
+        System.out.println("User menu (not implemented)");
+    }
+
+    public void saveUsersToFile() {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("usuarios.dat"));
+            oos.writeObject(users);
+            oos.close();
+        } catch (Exception e) {
+            System.out.println("Error saving users: " + e.getMessage());
+        }
+    }
+
+    public void loadUsersFromFile() {
+        try {
+            File f = new File("usuarios.dat");
+            if (!f.exists()) return;
+
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+            users = (ArrayList<User>) ois.readObject();
+            ois.close();
+        } catch (Exception e) {
+            System.out.println("Error loading users: " + e.getMessage());
+        }
+    }
+
+    private void fixLastId() {
+        int max = 0;
+        for (User u : users) {
+            try {
+                int idNum = Integer.parseInt(u.id);
+                if (idNum > max) max = idNum;
+            } catch (Exception ignored) {}
+        }
+        User.lastId = max;
     }
 }
