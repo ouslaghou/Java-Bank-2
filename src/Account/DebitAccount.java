@@ -18,6 +18,11 @@ public class DebitAccount extends BankAccount {
     }
 
     @Override
+    public void movimientos(int amount, BankAccount account, String balance) {
+
+    }
+
+    @Override
     public void deposit(int amount, BankAccount account) {
 
         account.balance += amount;
@@ -61,6 +66,7 @@ public class DebitAccount extends BankAccount {
                     if(accounts.get(i).accNumber.equals(destinationAcc)){
                         accounts.get(i).balance += ammount;
                         destAcc = accounts.get(i);
+                        account.lastransfer = amount;
                     }
                 }
                 System.out.println("Operation successful");
@@ -80,6 +86,7 @@ public class DebitAccount extends BankAccount {
             String number =  sc.nextLine();
             while( number.length() != 9){
                 System.out.println("Please enter a valid phone number (9 digits)\n");
+
                 number = sc.nextLine();
             }
         } catch (InputMismatchException e) {
@@ -108,13 +115,7 @@ public class DebitAccount extends BankAccount {
         }
     }
 
-    @Override
-    public void movimientos(int amount, BankAccount account, String balance) {
-        System.out.println("Historial de movimientos");
-        System.out.println("-------------------------");
-        System.out.println("Has depositado: " + account.lastDeposit);
-        System.out.println("Has retirado: " + account.lastWithdrawal );
-        System.out.println("Has transferido: "  );
-    }
+
+
 
 }

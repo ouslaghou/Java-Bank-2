@@ -11,7 +11,8 @@ public abstract class BankAccount implements Accounting {
    public String IBAN="";
    public String accountAlias="";
    public double balance=0.0;
-   int numNewAccount=0;
+    protected double lastransfer;
+    int numNewAccount=0;
    ArrayList<BankAccount> accounts=new ArrayList<BankAccount>();
    Scanner sc =new Scanner(System.in);
 
@@ -163,5 +164,8 @@ public abstract class BankAccount implements Accounting {
     public int lastWithdrawal;
     public int lastDeposit;
 
+
     public abstract void movimientos(int amount, BankAccount account, String balance);
+
+
 }

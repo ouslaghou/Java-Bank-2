@@ -5,13 +5,30 @@ import java.io.Serializable;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class User extends Person implements Serializable {
 
     public String id = "";
     public ArrayList<BankAccount> bankAccounts = new ArrayList<>();
+    public ArrayList<String> Historial = new ArrayList<>();
 
-    public static int lastId = 0; // Control global de IDs
+
+    public static int lastId = 0;
+
+    // SALDO GENERAL DEL USUARIO
+    public double saldo;
+
+    // MOVIMIENTOS PARA EL HISTORIAL
+    public double lastDeposit;
+    public double lastWithdrawal;
+    public double lastTransfer;
+    public int transferCount;
+    public int withdrawalCount;
+    public int depositCount;
+    public BankAccount[] accounts;
+    public boolean activeAccount;
 
     public User(String name, String password, String birthDate, String id) {
         super(name, password, birthDate);
@@ -74,7 +91,6 @@ public class User extends Person implements Serializable {
 
     @Override
     public boolean checkDate(String date) {
-
         String regex = "[/.,\\s]";
         String[] myArray = date.split(regex);
 
@@ -116,4 +132,14 @@ public class User extends Person implements Serializable {
         String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^*/&+=])(?=\\S+$).{8,}";
         return password.matches(pattern);
     }
+
+    public BankAccount cuenta;
+
+    public String getTime() {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        java.time.format.DateTimeFormatter format =
+                java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        return now.format(format);
+    }
+
 }
