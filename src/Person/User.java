@@ -9,14 +9,15 @@ import java.util.Scanner;
 public class User extends Person implements Serializable {
 
     public String id = "";
+    public String password;
     public ArrayList<BankAccount> bankAccounts = new ArrayList<>();
-
-    public static int lastId = 0; // Control global de IDs
+    public static int lastId = 0;
 
     public User(String name, String password, String birthDate, String id) {
         super(name, password, birthDate);
-        this.active = true;
+        this.password = password;   // ← NECESARIO para login y ficheros
         this.id = id;
+        this.active = true;
     }
 
     @Override
@@ -56,9 +57,9 @@ public class User extends Person implements Serializable {
             checkD = checkDate(birthdate);
         }
 
-        // ID AUTOINCREMENTAL SEGURO
+        // AUTO ID
         lastId++;
-        String newId = String.format("%08d", lastId);
+        String newId = String.format("%07d", lastId);
 
         User newUser = new User(name, password, birthdate, newId);
 
@@ -74,13 +75,10 @@ public class User extends Person implements Serializable {
 
     @Override
     public boolean checkDate(String date) {
-
         String regex = "[/.,\\s]";
         String[] myArray = date.split(regex);
 
-        if (myArray.length != 3) {
-            return false;
-        }
+        if (myArray.length != 3) return false;
 
         int day, month, yearInput;
 
@@ -97,9 +95,7 @@ public class User extends Person implements Serializable {
         if (day < 1 || day > 31) return false;
         if (month < 1 || month > 12) return false;
 
-        if (month == 4 || month == 6 || month == 9 || month == 11)
-            if (day > 30) return false;
-
+        if (month == 4 || month == 6 || month == 9 || month == 11 && day > 30) return false;
         if (month == 2) {
             boolean leap = (yearInput % 4 == 0);
             if (leap && day > 29) return false;
