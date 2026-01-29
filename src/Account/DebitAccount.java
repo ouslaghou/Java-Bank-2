@@ -1,7 +1,6 @@
 package Account;
 
 import Access.FileManager;
-
 import java.util.Scanner;
 
 public class DebitAccount extends BankAccount {
@@ -16,7 +15,8 @@ public class DebitAccount extends BankAccount {
     public void deposit(int amount, BankAccount account) {
         account.balance += amount;
         account.lastDeposit = amount;
-        System.out.println("Deposited " + amount);
+        account.addHistory("DEPOSIT", amount);
+        System.out.println("Deposited " + amount + "€");
     }
 
     @Override
@@ -27,6 +27,7 @@ public class DebitAccount extends BankAccount {
         }
         account.balance -= amount;
         account.lastWithdrawal = amount;
+        account.addHistory("WITHDRAW", amount);
         System.out.println("Withdraw successful");
     }
 
@@ -57,17 +58,21 @@ public class DebitAccount extends BankAccount {
         account.balance -= amount;
         destAcc.balance += amount;
 
+        account.addHistory("TRANSFER SENT to " + destAcc.accNumber, amount);
+        destAcc.addHistory("TRANSFER RECEIVED from " + account.accNumber, amount);
+
         System.out.println("Transfer successful");
     }
 
     @Override
     public void rechargeSIM(int amount, BankAccount account) {
+        account.balance -= amount;
+        account.addHistory("SIM RECHARGE", amount);
         System.out.println("SIM recharge done");
     }
 
     @Override
     public void movimientos(int amount, BankAccount account, String balance) {
-        System.out.println("Last deposit: " + account.lastDeposit);
-        System.out.println("Last withdrawal: " + account.lastWithdrawal);
+        account.showHistory();
     }
 }

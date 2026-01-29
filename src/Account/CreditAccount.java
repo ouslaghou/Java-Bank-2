@@ -1,7 +1,5 @@
 package Account;
 
-import Person.User;
-
 public class CreditAccount extends BankAccount {
 
     double creditLimit;
@@ -14,10 +12,20 @@ public class CreditAccount extends BankAccount {
     }
 
     @Override
-    public void deposit(int amount, BankAccount account) {}
+    public void deposit(int amount, BankAccount account) {
+        account.balance += amount;
+        account.addHistory("CREDIT DEPOSIT", amount);
+    }
 
     @Override
-    public void withdraw(int amount, BankAccount account) {}
+    public void withdraw(int amount, BankAccount account) {
+        if (amount > creditLimit) {
+            System.out.println("Credit limit exceeded");
+            return;
+        }
+        account.balance -= amount;
+        account.addHistory("CREDIT WITHDRAW", amount);
+    }
 
     @Override
     public void transfer(double amount, BankAccount account) {}
@@ -26,5 +34,7 @@ public class CreditAccount extends BankAccount {
     public void rechargeSIM(int amount, BankAccount account) {}
 
     @Override
-    public void movimientos(int amount, BankAccount account, String balance) {}
+    public void movimientos(int amount, BankAccount account, String balance) {
+        account.showHistory();
+    }
 }

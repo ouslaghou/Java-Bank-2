@@ -14,7 +14,7 @@ public class AccessScreen {
         persons = FileManager.loadPersons();
         FileManager.loadAccounts();
         linkAccountsToUsers();
-        rebuildLastIds();   // ⭐ RECONSTRUYE LOS IDs AL INICIAR
+        rebuildLastIds();
     }
 
     // ============================
@@ -224,13 +224,14 @@ public class AccessScreen {
     private void clientMenu(User u) {
         int option = 0;
 
-        while (option != 5) {
+        while (option != 6) {
             System.out.println("\n=== CLIENT MENU ===");
             System.out.println("1. View My Accounts");
             System.out.println("2. Deposit");
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
-            System.out.println("5. Logout");
+            System.out.println("5. View Account History");
+            System.out.println("6. Logout");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -241,6 +242,10 @@ public class AccessScreen {
                 case 3 -> withdraw(u);
                 case 4 -> transfer(u);
                 case 5 -> {
+                    BankAccount acc = selectAccount(u);
+                    acc.showHistory();
+                }
+                case 6 -> {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
                     return;

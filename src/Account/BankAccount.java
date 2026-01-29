@@ -1,10 +1,11 @@
 package Account;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public abstract class BankAccount implements Serializable {
 
-    public String ownerId;   // ⭐ VINCULA LA CUENTA CON EL USUARIO
+    public String ownerId;
     public String entity;
     public String office;
     public String accNumber;
@@ -16,6 +17,8 @@ public abstract class BankAccount implements Serializable {
     public int lastDeposit;
     public int lastWithdrawal;
 
+    public ArrayList<String> history = new ArrayList<>();
+
     public BankAccount(String ownerId, String entity, String office, String accNumber, String dc, String IBAN, String alias) {
         this.ownerId = ownerId;
         this.entity = entity;
@@ -24,6 +27,26 @@ public abstract class BankAccount implements Serializable {
         this.dc = dc;
         this.IBAN = IBAN;
         this.accountAlias = alias;
+    }
+
+    public void addHistory(String type, double amount) {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        java.time.format.DateTimeFormatter format =
+                java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy");
+
+        String entry = type + " | " + amount + "€ | " + now.format(format);
+        history.add(entry);
+    }
+
+    public void showHistory() {
+        System.out.println("\n=== ACCOUNT HISTORY: " + accountAlias + " ===");
+        if (history.isEmpty()) {
+            System.out.println("No movements recorded.");
+            return;
+        }
+        for (String entry : history) {
+            System.out.println(entry);
+        }
     }
 
     public abstract void deposit(int amount, BankAccount account);
