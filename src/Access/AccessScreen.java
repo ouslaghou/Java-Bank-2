@@ -395,6 +395,12 @@ public class AccessScreen {
 
         int opt = sc.nextInt();
         sc.nextLine();
+
+        if (opt < 1 || opt > u.bankAccounts.size()) {
+            System.out.println("Invalid option. Please select a valid account.");
+            return selectAccount(u);
+        }
+
         return u.bankAccounts.get(opt - 1);
     }
 
