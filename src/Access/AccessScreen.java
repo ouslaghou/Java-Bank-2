@@ -61,9 +61,8 @@ public class AccessScreen {
         }
     }
 
-    // ============================
     // MENÚ PRINCIPAL
-    // ============================
+
     public void menu() {
 
         int option = 0;
@@ -89,9 +88,9 @@ public class AccessScreen {
         }
     }
 
-    // ============================
+
     // REGISTRO DE USUARIOS
-    // ============================
+
     private void registerUser() {
         System.out.println("\nSelect user type:");
         System.out.println("1. Client");
@@ -152,9 +151,7 @@ public class AccessScreen {
         }
     }
 
-    // ============================
     // MENÚ GERENTE
-    // ============================
     private void managerMenu(Manager m) {
         int option = 0;
 
@@ -187,9 +184,9 @@ public class AccessScreen {
         }
     }
 
-    // ============================
+
     // MENÚ EMPLEADO
-    // ============================
+
     private void employeeMenu(Employee e) {
         int option = 0;
 
@@ -218,9 +215,9 @@ public class AccessScreen {
         }
     }
 
-    // ============================
+
     // MENÚ CLIENTE
-    // ============================
+
     private void clientMenu(User u) {
         int option = 0;
 
