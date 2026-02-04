@@ -231,7 +231,8 @@ public class AccessScreen {
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
             System.out.println("5. View Account History");
-            System.out.println("6. Logout");
+            System.out.println("6. Solictar tarjeta");
+            System.out.println("7. Logout");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -246,6 +247,10 @@ public class AccessScreen {
                     acc.showHistory();
                 }
                 case 6 -> {
+                    solicitarTarjeta(u);
+
+                }
+                case 7 -> {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
                     return;
@@ -427,4 +432,31 @@ public class AccessScreen {
         sc.nextLine();
         acc.transfer(amount, acc);
     }
+
+    public void solicitarTarjeta(User u) {
+        Card c= null;
+        if (u.bankAccounts.isEmpty()) {
+            System.out.println("No tienes cuentas, no puedes solicitar tarjeta.");
+            return;
+        }
+        System.out.println("De credito o de debito? 1/2 ");
+        int opc = sc.nextInt();
+        if (opc == 1 ){
+            c = new CreditCard();
+            System.out.println("Tarjeta de credito creada");
+        } else if (opc == 2) {
+            c = new DebitCard();
+            System.out.println("Tarjeta de debito creada");
+        }else {
+            System.out.println("Elija una opcion correcta");
+        }
+        BankAccount acc = selectAccount(u);
+        acc.cards.add(c);
+
+        FileManager.saveAccounts();
+        FileManager.savePersons(persons);
+
+        System.out.println("Tarjeta creada correctamente.");
+    }
+
 }

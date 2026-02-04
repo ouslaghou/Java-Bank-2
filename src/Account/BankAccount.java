@@ -19,6 +19,7 @@ public abstract class BankAccount implements Serializable {
 
     public ArrayList<String> history = new ArrayList<>();
 
+
     public BankAccount(String ownerId, String entity, String office, String accNumber, String dc, String IBAN, String alias) {
         this.ownerId = ownerId;
         this.entity = entity;
@@ -48,6 +49,7 @@ public abstract class BankAccount implements Serializable {
             System.out.println(entry);
         }
     }
+    public ArrayList<Card> cards = new ArrayList<>();
 
     public abstract void deposit(int amount, BankAccount account);
     public abstract void withdraw(int amount, BankAccount account);
