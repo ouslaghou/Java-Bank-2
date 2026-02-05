@@ -1,9 +1,11 @@
 package Account;
 
 import Access.FileManager;
+
+import java.io.Serializable;
 import java.util.Scanner;
 
-public class DebitAccount extends BankAccount {
+public class DebitAccount extends BankAccount implements Serializable {
 
     Scanner sc = new Scanner(System.in);
 
@@ -14,7 +16,6 @@ public class DebitAccount extends BankAccount {
     @Override
     public void deposit(int amount, BankAccount account) {
         account.balance += amount;
-        account.lastDeposit = amount;
         account.addHistory("DEPOSIT", amount);
         System.out.println("Deposited " + amount + "€");
     }
@@ -26,7 +27,6 @@ public class DebitAccount extends BankAccount {
             return;
         }
         account.balance -= amount;
-        account.lastWithdrawal = amount;
         account.addHistory("WITHDRAW", amount);
         System.out.println("Withdraw successful");
     }
