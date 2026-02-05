@@ -119,12 +119,12 @@ public class AccessScreen implements Serializable {
     // ============================
     // LOGIN
     // ============================
+    // ============================
     private void login() {
-        System.out.println("\nEnter ID:");
+        System.out.println("\nEnter ID:"); //Añadir ID para logerarse.
         String id = sc.nextLine();
 
         Person p = null;
-
         for (Person x : persons) {
             if (x.id.equals(id)) {
                 p = x;
@@ -132,25 +132,40 @@ public class AccessScreen implements Serializable {
             }
         }
 
-        if (p == null) {
+        if (p == null) { //Si pone un ID inventado o vacío no le dejará continuar
             System.out.println("ID not found.");
             return;
         }
 
-        System.out.println("Enter password:");
-        String pass = sc.nextLine();
-
-        if (!pass.equals(p.password)) {
-            System.out.println("Wrong password.");
+        if (!p.active) { //Si pone el ID que anteriormente un employee o manager a bloqueador no podrá acceder
+            System.out.println("This user is blocked and cannot log in.");
             return;
         }
 
-        System.out.println("Login successful. Welcome " + p.name + " (" + p.id + ")");
+        int intentos = 0;
 
-        switch (p.role) {
-            case "manager" -> managerMenu((Manager) p);
-            case "employee" -> employeeMenu((Employee) p);
-            case "client" -> clientMenu((User) p);
+        while (intentos < 3) {
+            System.out.println("Enter Password:");
+            String pass = sc.nextLine();
+
+            if (!p.password.equals(pass)) {
+                intentos++;
+                if (intentos < 3) {
+                    System.out.println("Wrong password. Te quedan " + (3 - intentos) + " intentos.");
+                } else {
+                    p.active = false;
+                    System.out.println("User blocked: " + p.id);
+                    return;
+                }
+            } else {
+                System.out.println("Login successful. Welcome " + p.name + " (" + p.id + ")");
+                switch (p.role) {
+                    case "manager" -> managerMenu((Manager) p);
+                    case "employee" -> employeeMenu((Employee) p);
+                    case "client" -> clientMenu((User) p);
+                }
+                return;
+            }
         }
     }
 
@@ -169,7 +184,8 @@ public class AccessScreen implements Serializable {
             System.out.println("5. View All Users");
             System.out.println("6. Block User");
             System.out.println("7. Close Month (Credit System)");
-            System.out.println("8. Logout");
+            System.out.println("8. Unlock User");
+            System.out.println("9. Logout");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -182,7 +198,8 @@ public class AccessScreen implements Serializable {
                 case 5 -> showAllUsers();
                 case 6 -> blockUser();
                 case 7 -> closeMonth();
-                case 8 -> {
+                case 8 -> unlockUser();
+                case 9 -> {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
                     return;
@@ -203,7 +220,8 @@ public class AccessScreen implements Serializable {
             System.out.println("2. Create Bank Account");
             System.out.println("3. View Clients");
             System.out.println("4. Block Client");
-            System.out.println("5. Logout");
+            System.out.println("5. Unlock Client");
+            System.out.println("6. Logout");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -213,7 +231,8 @@ public class AccessScreen implements Serializable {
                 case 2 -> createBankAccount();
                 case 3 -> showClients();
                 case 4 -> blockClient();
-                case 5 -> {
+                case 5 -> unlockUser();
+                case 6 -> {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
                     return;
@@ -442,6 +461,22 @@ public class AccessScreen implements Serializable {
         System.out.println("Client not found.");
     }
 
+    private void unlockUser() {
+        System.out.println("Enter ID to unlock:");
+        String id = sc.nextLine();
+
+        for (Person p : persons) {
+            if (p.id.equals(id)) {
+                p.active = true;
+                System.out.println("User unlocked: " + p.id);
+                return;
+            }
+        }
+
+        System.out.println("User not found.");
+    }
+
+
     // ============================
     // OPERACIONES CLIENTE
     // ============================
@@ -575,7 +610,7 @@ public class AccessScreen implements Serializable {
                         ca.operationsBlocked = true;
                         System.out.println(u.name + " sigue en deuda (mes 2). Operaciones bloqueadas.");
                     } else if (ca.monthsInDebt >= 3) {
-                        System.out.println("⚠ Solicitud judicial de embargo para " + u.name);
+                        System.out.println("Solicitud judicial de embargo para " + u.name);
                     }
                 }
             }
