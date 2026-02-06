@@ -19,9 +19,7 @@ public class AccessScreen implements Serializable {
         rebuildLastIds();
     }
 
-    // ============================
-    // RECONSTRUIR IDs DESDE FICHERO
-    // ============================
+    //Reconstruir IDS
     private void rebuildLastIds() {
         int maxClient = 0;
         int maxEmployee = 0;
@@ -50,9 +48,7 @@ public class AccessScreen implements Serializable {
         Manager.lastManagerId = maxManager;
     }
 
-    // ============================
-    // VINCULAR CUENTAS A USUARIOS
-    // ============================
+    //Vinculación de cuenta a usuarios
     private void linkAccountsToUsers() {
         for (BankAccount acc : FileManager.accounts) {
             for (Person p : persons) {
@@ -63,9 +59,7 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // MENÚ PRINCIPAL
-    // ============================
+    //Menu principal
     public void menu() {
 
         int option = 0;
@@ -91,9 +85,7 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // REGISTRO DE USUARIOS
-    // ============================
+    //Registro de usuarios
     private void registerUser() {
         System.out.println("\nSelect user type:");
         System.out.println("1. Client");
@@ -116,10 +108,7 @@ public class AccessScreen implements Serializable {
         System.out.println("User registered successfully. ID: " + p.id);
     }
 
-    // ============================
-    // LOGIN
-    // ============================
-    // ============================
+    //Login para iniciar sesión
     private void login() {
         System.out.println("\nEnter ID:"); //Añadir ID para logerarse.
         String id = sc.nextLine();
@@ -169,9 +158,7 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // MENÚ GERENTE
-    // ============================
+    //Menu manager
     private void managerMenu(Manager m) {
         int option = 0;
 
@@ -208,9 +195,7 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // MENÚ EMPLEADO
-    // ============================
+    //Menu empleado
     private void employeeMenu(Employee e) {
         int option = 0;
 
@@ -241,9 +226,7 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // MENÚ CLIENTE
-    // ============================
+    //Menú cliente
     private void clientMenu(User u) {
         int option = 0;
 
@@ -281,9 +264,7 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // CREAR USUARIOS
-    // ============================
+    //Crear usuarios
     private void createClient() {
         Person p = new User("", "", "").register();
         persons.add(p);
@@ -305,9 +286,7 @@ public class AccessScreen implements Serializable {
         System.out.println("Manager created. ID: " + p.id);
     }
 
-    // ============================
-    // CREAR CUENTAS (SIN IBAN REAL)
-    // ============================
+    //Crea la cuenta de banco y asigna IBAN
     private void createBankAccount() {
         System.out.println("Enter owner ID:");
         String id = sc.nextLine();
@@ -352,9 +331,7 @@ public class AccessScreen implements Serializable {
         System.out.println("IBAN: " + iban);
     }
 
-    // ============================
-    // SOLICITAR CUENTA DE CRÉDITO
-    // ============================
+    //Solicitar cuenta de crédito
     private void solicitarCuentaCredito(User u) {
         System.out.println("\n=== SOLICITAR CUENTA DE CRÉDITO ===");
         System.out.println("1. 500€");
@@ -393,9 +370,7 @@ public class AccessScreen implements Serializable {
         System.out.println("Cuenta de crédito creada con límite de " + limit + "€");
     }
 
-    // ============================
-    // MOSTRAR USUARIOS
-    // ============================
+    //Mostrar usuarios
     private void showAllUsers() {
         System.out.println("\n=== LIST OF ALL USERS ===");
 
@@ -430,9 +405,7 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // BLOQUEAR USUARIOS
-    // ============================
+    //Bloquear usuarios
     private void blockUser() {
         System.out.println("Enter ID to block:");
         String id = sc.nextLine();
@@ -447,6 +420,7 @@ public class AccessScreen implements Serializable {
         System.out.println("User not found.");
     }
 
+    //Bloquear cliente
     private void blockClient() {
         System.out.println("Enter client ID to block:");
         String id = sc.nextLine();
@@ -461,6 +435,7 @@ public class AccessScreen implements Serializable {
         System.out.println("Client not found.");
     }
 
+    //Desbloquear usuario
     private void unlockUser() {
         System.out.println("Enter ID to unlock:");
         String id = sc.nextLine();
@@ -477,9 +452,7 @@ public class AccessScreen implements Serializable {
     }
 
 
-    // ============================
-    // OPERACIONES CLIENTE
-    // ============================
+    //Operaciones cliente
     private BankAccount selectAccount(User u) {
         System.out.println("\nSelect account for user " + u.name + " (" + u.id + "):");
 
@@ -522,9 +495,7 @@ public class AccessScreen implements Serializable {
         acc.transfer(amount, acc);
     }
 
-    // ============================
-    // TARJETAS
-    // ============================
+    //Para solicitar tarjetas dependiendo si anteriormente un gerente o un mánager le ha creado una cuenta de banco a la cuenta correspondiente
     public void solicitarTarjeta(User u) {
         Card c = null;
 
@@ -557,9 +528,7 @@ public class AccessScreen implements Serializable {
         System.out.println("Tarjeta creada correctamente.");
     }
 
-    // ============================
-    // CIERRE DE MES (CRÉDITO)
-    // ============================
+    //Lo que cada mes se lleva el banco de tu cuenta
     private void closeMonth() {
         System.out.println("\n=== CIERRE DE MES ===");
 
