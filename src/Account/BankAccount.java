@@ -34,9 +34,7 @@ public abstract class BankAccount implements Serializable {
         this.accountAlias = alias;
     }
 
-    // ============================
-    // HISTORIAL
-    // ============================
+    //Historial
     public void addHistory(String type, double amount) {
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         java.time.format.DateTimeFormatter fmt =
@@ -56,9 +54,7 @@ public abstract class BankAccount implements Serializable {
         }
     }
 
-    // ============================
-    // MÉTODOS ABSTRACTOS
-    // ============================
+    //Métodos abstractos
     public abstract void deposit(int amount, BankAccount account);
     public abstract void withdraw(int amount, BankAccount account);
     public abstract void transfer(double amount, BankAccount account);

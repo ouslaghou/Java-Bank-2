@@ -110,7 +110,7 @@ public class AccessScreen implements Serializable {
 
     //Login para iniciar sesión
     private void login() {
-        System.out.println("\nEnter ID:"); //Añadir ID para logerarse.
+        System.out.println("\nEnter ID:");
         String id = sc.nextLine();
 
         Person p = null;
@@ -121,12 +121,12 @@ public class AccessScreen implements Serializable {
             }
         }
 
-        if (p == null) { //Si pone un ID inventado o vacío no le dejará continuar
+        if (p == null) {
             System.out.println("ID not found.");
             return;
         }
 
-        if (!p.active) { //Si pone el ID que anteriormente un employee o manager a bloqueador no podrá acceder
+        if (!p.active) {
             System.out.println("This user is blocked and cannot log in.");
             return;
         }
@@ -239,7 +239,8 @@ public class AccessScreen implements Serializable {
             System.out.println("5. View Account History");
             System.out.println("6. Solicitar tarjeta");
             System.out.println("7. Solicitar cuenta de crédito");
-            System.out.println("8. Logout");
+            System.out.println("8. Tienda online");
+            System.out.println("9. Logout");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -255,7 +256,8 @@ public class AccessScreen implements Serializable {
                 }
                 case 6 -> solicitarTarjeta(u);
                 case 7 -> solicitarCuentaCredito(u);
-                case 8 -> {
+                case 8 -> tiendaonline(u);   // ← CORREGIDO
+                case 9 -> {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
                     return;
@@ -451,6 +453,17 @@ public class AccessScreen implements Serializable {
         System.out.println("User not found.");
     }
 
+    private void tiendaonline(User u) {
+
+        if (u.bankAccounts.isEmpty()) {
+            System.out.println("No tienes cuentas para usar en la tienda.");
+            return;
+        }
+
+        BankAccount cuentaActual = u.bankAccounts.get(0);
+
+        tiendaonline.tienda(cuentaActual, persons);
+    }
 
     //Operaciones cliente
     private BankAccount selectAccount(User u) {
@@ -495,7 +508,6 @@ public class AccessScreen implements Serializable {
         acc.transfer(amount, acc);
     }
 
-    //Para solicitar tarjetas dependiendo si anteriormente un gerente o un mánager le ha creado una cuenta de banco a la cuenta correspondiente
     public void solicitarTarjeta(User u) {
         Card c = null;
 
@@ -528,7 +540,6 @@ public class AccessScreen implements Serializable {
         System.out.println("Tarjeta creada correctamente.");
     }
 
-    //Lo que cada mes se lleva el banco de tu cuenta
     private void closeMonth() {
         System.out.println("\n=== CIERRE DE MES ===");
 
