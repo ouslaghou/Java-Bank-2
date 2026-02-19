@@ -224,7 +224,7 @@ public class AccessScreen {
     private void clientMenu(User u) {
         int option = 0;
 
-        while (option != 6) {
+        while (option != 7) {
             System.out.println("\n=== CLIENT MENU ===");
             System.out.println("1. View My Accounts");
             System.out.println("2. Deposit");
@@ -233,6 +233,7 @@ public class AccessScreen {
             System.out.println("5. View Account History");
             System.out.println("6. Solictar tarjeta");
             System.out.println("7. Logout");
+            System.out.println("8. Inversiones");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -254,6 +255,11 @@ public class AccessScreen {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
                     return;
+                }
+                case 8 -> {
+                    PanelInversiones panel = new PanelInversiones();
+                    panel.mostrar(u);
+
                 }
             }
         }
@@ -458,5 +464,4 @@ public class AccessScreen {
 
         System.out.println("Tarjeta creada correctamente.");
     }
-
 }

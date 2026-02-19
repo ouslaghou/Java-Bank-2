@@ -1,6 +1,8 @@
 package Person;
 
 import Account.BankAccount;
+import Account.Inversiones;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -13,6 +15,7 @@ public class User extends Person implements Serializable {
     public User(String name, String password, String birthDate) {
         super(name, password, birthDate, "client");
     }
+    public ArrayList<Inversiones> inversiones = new ArrayList<>();
 
     @Override
     public Person register() {
