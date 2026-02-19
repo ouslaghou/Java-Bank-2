@@ -217,6 +217,7 @@ public class AccessScreen implements Serializable {
             System.out.println("7. Solicitar cuenta de crédito");
             System.out.println("8. Logout");
             System.out.println("9. Contratar seguro");
+            System.out.println("10. Tienda online");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -252,6 +253,8 @@ public class AccessScreen implements Serializable {
                     InsuranceService seguroService = new InsuranceService();
                     seguroService.contratarSeguro(acc);
                 }
+
+                case 10 -> tiendaonline(u);
 
 
                 default -> System.out.println("Opción no válida.");
@@ -422,6 +425,18 @@ public class AccessScreen implements Serializable {
             }
         }
         System.out.println("Client not found.");
+    }
+
+    private void tiendaonline(User u) {
+
+        if (u.bankAccounts.isEmpty()) {
+            System.out.println("No tienes cuentas para usar en la tienda.");
+            return;
+        }
+
+        BankAccount cuentaActual = u.bankAccounts.get(0);
+
+        tiendaonline.tienda(cuentaActual, persons);
     }
 
     private BankAccount selectAccount(User u) {
