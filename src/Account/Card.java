@@ -1,19 +1,12 @@
 package Account;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
+// Clase base para cualquier tarjeta (crédito o débito)
+// Debe ser serializable porque se guarda dentro de las cuentas
 public class Card implements Serializable {
 
-    String numCard ="";
-    int pin=0;
-    boolean active = true;
-    System titular;
+    public String type; // Tipo de tarjeta: CREDIT o DEBIT
 
-    public Card() {
-        numCard = GeneradorTarjeta.generarTarjeta(16);
-        pin = (int)(Math.random() * 9000) + 1000;
-        active = true;
-        this.titular = titular;
-
-    }
 }

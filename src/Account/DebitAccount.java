@@ -1,44 +1,45 @@
 package Account;
 
-import Access.FileManager;
-import java.util.Scanner;
+import java.io.Serializable;
 
-public class DebitAccount extends BankAccount {
+// Cuenta de débito normal
+public class DebitAccount extends BankAccount implements Serializable {
 
-    Scanner sc = new Scanner(System.in);
+    public DebitAccount(String ownerId, String entity, String office,
+                        String accNumber, String dc, String IBAN, String alias) {
 
-    public DebitAccount(String ownerId, String entity, String office, String accNumber, String dc, String IBAN, String alias) {
         super(ownerId, entity, office, accNumber, dc, IBAN, alias);
     }
 
     @Override
     public void deposit(int amount, BankAccount account) {
         account.balance += amount;
-        account.lastDeposit = amount;
-        account.addHistory("DEPOSIT", amount);
-        System.out.println("Deposited " + amount + "€");
+        account.addHistory("DEPÓSITO", amount);
+        System.out.println("Depósito realizado.");
     }
 
     @Override
     public void withdraw(int amount, BankAccount account) {
-        if (amount > account.balance) {
-            System.out.println("Insufficient funds");
-            return;
-        }
+
+        // PERMITIMOS SALDO NEGATIVO
         account.balance -= amount;
-        account.lastWithdrawal = amount;
-        account.addHistory("WITHDRAW", amount);
-        System.out.println("Withdraw successful");
+
+        account.addHistory("RETIRADA", amount);
+        System.out.println("Retirada realizada (saldo negativo permitido).");
     }
 
     @Override
     public void transfer(double amount, BankAccount account) {
-        System.out.println("Enter destination account number:");
+
+        // PERMITIMOS SALDO NEGATIVO
+        account.balance -= amount;
+
+        System.out.println("Número de cuenta destino:");
+        java.util.Scanner sc = new java.util.Scanner(System.in);
         String dest = sc.nextLine();
 
         BankAccount destAcc = null;
-
-        for (BankAccount ba : FileManager.accounts) {
+        for (BankAccount ba : Access.FileManager.accounts) {
             if (ba.accNumber.equals(dest)) {
                 destAcc = ba;
                 break;
@@ -46,29 +47,21 @@ public class DebitAccount extends BankAccount {
         }
 
         if (destAcc == null) {
-            System.out.println("Destination account not found");
+            System.out.println("Cuenta destino no encontrada.");
             return;
         }
 
-        if (amount > account.balance) {
-            System.out.println("Insufficient funds");
-            return;
-        }
-
-        account.balance -= amount;
         destAcc.balance += amount;
 
-        account.addHistory("TRANSFER SENT to " + destAcc.accNumber, amount);
-        destAcc.addHistory("TRANSFER RECEIVED from " + account.accNumber, amount);
+        account.addHistory("TRANSFERENCIA ENVIADA", amount);
+        destAcc.addHistory("TRANSFERENCIA RECIBIDA", amount);
 
-        System.out.println("Transfer successful");
+        System.out.println("Transferencia realizada.");
     }
 
     @Override
     public void rechargeSIM(int amount, BankAccount account) {
-        account.balance -= amount;
-        account.addHistory("SIM RECHARGE", amount);
-        System.out.println("SIM recharge done");
+        withdraw(amount, account);
     }
 
     @Override

@@ -10,12 +10,12 @@ import java.util.Scanner;
 public class User extends Person implements Serializable {
 
     public ArrayList<BankAccount> bankAccounts = new ArrayList<>();
+    public ArrayList<Inversiones> inversiones = new ArrayList<>();
     public static int lastId = 0;
 
     public User(String name, String password, String birthDate) {
         super(name, password, birthDate, "client");
     }
-    public ArrayList<Inversiones> inversiones = new ArrayList<>();
 
     @Override
     public Person register() {
@@ -24,20 +24,24 @@ public class User extends Person implements Serializable {
         System.out.println("Enter client name:");
         this.name = sc.nextLine();
 
-        System.out.println("Enter password:");
-        this.password = sc.nextLine();
+        // PASSWORD VALIDATION
+        do {
+            System.out.println("Enter password (min 8 chars, upper, lower, digit, special):");
+            this.password = sc.nextLine();
+            if (!checkPassword(this.password))
+                System.out.println("Invalid password format.");
+        } while (!checkPassword(this.password));
 
-        System.out.println("Enter birthdate:");
-        this.birthDate = sc.nextLine();
+        // DATE VALIDATION
+        do {
+            System.out.println("Enter birthdate (dd/MM/yyyy):");
+            this.birthDate = sc.nextLine();
+            if (!checkDate(this.birthDate))
+                System.out.println("Invalid date.");
+        } while (!checkDate(this.birthDate));
 
         this.id = String.format("%07d", ++lastId);
 
         return this;
     }
-
-    @Override
-    public boolean checkDate(String date) { return true; }
-
-    @Override
-    public boolean checkPassword(String password) { return true; }
 }

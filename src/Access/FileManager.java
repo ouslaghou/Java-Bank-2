@@ -32,4 +32,7 @@ public class FileManager {
             accounts = (ArrayList<BankAccount>) ois.readObject();
         } catch (Exception e) { accounts = new ArrayList<>(); }
     }
-}
+
+
+    }
+

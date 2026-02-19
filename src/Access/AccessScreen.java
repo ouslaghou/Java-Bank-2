@@ -2,10 +2,12 @@ package Access;
 
 import Person.*;
 import Account.*;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class AccessScreen {
+public class AccessScreen implements Serializable {
 
     ArrayList<Person> persons;
     Scanner sc = new Scanner(System.in);
@@ -17,9 +19,6 @@ public class AccessScreen {
         rebuildLastIds();
     }
 
-    // ============================
-    // RECONSTRUIR IDs DESDE FICHERO
-    // ============================
     private void rebuildLastIds() {
         int maxClient = 0;
         int maxEmployee = 0;
@@ -48,9 +47,6 @@ public class AccessScreen {
         Manager.lastManagerId = maxManager;
     }
 
-    // ============================
-    // VINCULAR CUENTAS A USUARIOS
-    // ============================
     private void linkAccountsToUsers() {
         for (BankAccount acc : FileManager.accounts) {
             for (Person p : persons) {
@@ -61,9 +57,6 @@ public class AccessScreen {
         }
     }
 
-    // ============================
-    // MENÚ PRINCIPAL
-    // ============================
     public void menu() {
 
         int option = 0;
@@ -89,9 +82,6 @@ public class AccessScreen {
         }
     }
 
-    // ============================
-    // REGISTRO DE USUARIOS
-    // ============================
     private void registerUser() {
         System.out.println("\nSelect user type:");
         System.out.println("1. Client");
@@ -114,9 +104,6 @@ public class AccessScreen {
         System.out.println("User registered successfully. ID: " + p.id);
     }
 
-    // ============================
-    // LOGIN
-    // ============================
     private void login() {
         System.out.println("\nEnter ID:");
         String id = sc.nextLine();
@@ -152,13 +139,10 @@ public class AccessScreen {
         }
     }
 
-    // ============================
-    // MENÚ GERENTE
-    // ============================
     private void managerMenu(Manager m) {
         int option = 0;
 
-        while (option != 7) {
+        while (option != 8) {
             System.out.println("\n=== MANAGER MENU ===");
             System.out.println("1. Create Client");
             System.out.println("2. Create Employee");
@@ -166,7 +150,8 @@ public class AccessScreen {
             System.out.println("4. Create Bank Account");
             System.out.println("5. View All Users");
             System.out.println("6. Block User");
-            System.out.println("7. Logout");
+            System.out.println("7. Close Month (Credit System)");
+            System.out.println("8. Logout");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -178,7 +163,7 @@ public class AccessScreen {
                 case 4 -> createBankAccount();
                 case 5 -> showAllUsers();
                 case 6 -> blockUser();
-                case 7 -> {
+                case 8 -> {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
                     return;
@@ -187,9 +172,6 @@ public class AccessScreen {
         }
     }
 
-    // ============================
-    // MENÚ EMPLEADO
-    // ============================
     private void employeeMenu(Employee e) {
         int option = 0;
 
@@ -218,56 +200,68 @@ public class AccessScreen {
         }
     }
 
-    // ============================
-    // MENÚ CLIENTE
-    // ============================
+    //menu seguros
+
     private void clientMenu(User u) {
         int option = 0;
 
-        while (option != 7) {
+        while (option != 12) {
             System.out.println("\n=== CLIENT MENU ===");
             System.out.println("1. View My Accounts");
             System.out.println("2. Deposit");
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
             System.out.println("5. View Account History");
-            System.out.println("6. Solictar tarjeta");
-            System.out.println("7. Logout");
-            System.out.println("8. Inversiones");
+            System.out.println("6. Solicitar tarjeta");
+            System.out.println("7. Solicitar cuenta de crédito");
+            System.out.println("8. Logout");
+            System.out.println("9. Contratar seguro");
+            System.out.println("10. Tienda online");
+            System.out.println("11. Inversiones");
 
             option = sc.nextInt();
             sc.nextLine();
 
             switch (option) {
+
                 case 1 -> showUserAccounts(u);
+
                 case 2 -> deposit(u);
+
                 case 3 -> withdraw(u);
+
                 case 4 -> transfer(u);
+
                 case 5 -> {
                     BankAccount acc = selectAccount(u);
                     acc.showHistory();
                 }
-                case 6 -> {
-                    solicitarTarjeta(u);
 
-                }
-                case 7 -> {
+                case 6 -> solicitarTarjeta(u);
+
+                case 7 -> solicitarCuentaCredito(u);
+
+                case 8 -> {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
                     return;
                 }
-                case 8 -> {
-                    PanelInversiones panel = new PanelInversiones();
-                    panel.mostrar(u);
 
+                //  CONTRATAR SEGURO
+                case 9 -> {
+                    BankAccount acc = selectAccount(u);
+                    InsuranceService seguroService = new InsuranceService();
+                    seguroService.contratarSeguro(acc);
                 }
+
+                case 10 -> tiendaonline(u);
+
+
+                default -> System.out.println("Opción no válida.");
             }
         }
     }
 
-    // ============================
-    // CREAR USUARIOS
-    // ============================
     private void createClient() {
         Person p = new User("", "", "").register();
         persons.add(p);
@@ -289,9 +283,6 @@ public class AccessScreen {
         System.out.println("Manager created. ID: " + p.id);
     }
 
-    // ============================
-    // CREAR CUENTAS
-    // ============================
     private void createBankAccount() {
         System.out.println("Enter owner ID:");
         String id = sc.nextLine();
@@ -313,8 +304,17 @@ public class AccessScreen {
         System.out.println("Enter account number:");
         String acc = sc.nextLine();
 
+        String dc = "00";
+        String iban = "ES00" + acc;
+
         BankAccount newAcc = new DebitAccount(
-                p.id, "9999", "8888", acc, "00", "ES00" + acc, "Account " + acc
+                p.id,
+                "9999",
+                "8888",
+                acc,
+                dc,
+                iban,
+                "Account " + acc
         );
 
         ((User) p).bankAccounts.add(newAcc);
@@ -323,14 +323,50 @@ public class AccessScreen {
         FileManager.saveAccounts();
         FileManager.savePersons(persons);
 
-        System.out.println("Account created for user " + p.name + " (" + p.id + ")");
+        System.out.println("\nAccount created for user " + p.name + " (" + p.id + ")");
+        System.out.println("IBAN: " + iban);
     }
 
-    // ============================
-    // MOSTRAR USUARIOS
-    // ============================
+    private void solicitarCuentaCredito(User u) {
+        System.out.println("\n=== SOLICITAR CUENTA DE CRÉDITO ===");
+        System.out.println("1. 500€");
+        System.out.println("2. 1000€");
+        System.out.println("3. 5000€");
+
+        int opt = sc.nextInt();
+        sc.nextLine();
+
+        double limit = switch (opt) {
+            case 1 -> 500;
+            case 2 -> 1000;
+            case 3 -> 5000;
+            default -> {
+                System.out.println("Opción no válida.");
+                yield -1;
+            }
+        };
+
+        if (limit == -1) return;
+
+        System.out.println("Número de cuenta:");
+        String acc = sc.nextLine();
+
+        BankAccount newAcc = new CreditAccount(
+                u.id, "9999", "8888", acc, "00", "ES00" + acc,
+                "Cuenta Crédito " + acc, limit
+        );
+
+        u.bankAccounts.add(newAcc);
+        FileManager.accounts.add(newAcc);
+
+        FileManager.saveAccounts();
+        FileManager.savePersons(persons);
+
+        System.out.println("Cuenta de crédito creada con límite de " + limit + "€");
+    }
+
     private void showAllUsers() {
-        System.out.println("\n=== LIST OF ALL USERS ===");
+        System.out.println("=== LIST OF ALL USERS ===");
 
         for (Person p : persons) {
             System.out.println(
@@ -363,9 +399,6 @@ public class AccessScreen {
         }
     }
 
-    // ============================
-    // BLOQUEAR USUARIOS
-    // ============================
     private void blockUser() {
         System.out.println("Enter ID to block:");
         String id = sc.nextLine();
@@ -394,9 +427,18 @@ public class AccessScreen {
         System.out.println("Client not found.");
     }
 
-    // ============================
-    // OPERACIONES CLIENTE
-    // ============================
+    private void tiendaonline(User u) {
+
+        if (u.bankAccounts.isEmpty()) {
+            System.out.println("No tienes cuentas para usar en la tienda.");
+            return;
+        }
+
+        BankAccount cuentaActual = u.bankAccounts.get(0);
+
+        tiendaonline.tienda(cuentaActual, persons);
+    }
+
     private BankAccount selectAccount(User u) {
         System.out.println("\nSelect account for user " + u.name + " (" + u.id + "):");
 
@@ -440,22 +482,28 @@ public class AccessScreen {
     }
 
     public void solicitarTarjeta(User u) {
-        Card c= null;
+        Card c = null;
+
         if (u.bankAccounts.isEmpty()) {
             System.out.println("No tienes cuentas, no puedes solicitar tarjeta.");
             return;
         }
-        System.out.println("De credito o de debito? 1/2 ");
+
+        System.out.println("¿De crédito o de débito? 1/2 ");
         int opc = sc.nextInt();
-        if (opc == 1 ){
+        sc.nextLine();
+
+        if (opc == 1) {
             c = new CreditCard();
-            System.out.println("Tarjeta de credito creada");
+            System.out.println("Tarjeta de crédito creada");
         } else if (opc == 2) {
             c = new DebitCard();
-            System.out.println("Tarjeta de debito creada");
-        }else {
-            System.out.println("Elija una opcion correcta");
+            System.out.println("Tarjeta de débito creada");
+        } else {
+            System.out.println("Elija una opción correcta");
+            return;
         }
+
         BankAccount acc = selectAccount(u);
         acc.cards.add(c);
 
@@ -463,5 +511,67 @@ public class AccessScreen {
         FileManager.savePersons(persons);
 
         System.out.println("Tarjeta creada correctamente.");
+    }
+
+    private void closeMonth() {
+        System.out.println("\n=== CIERRE DE MES ===");
+
+        for (Person p : persons) {
+            if (!(p instanceof User u)) continue;
+
+            for (BankAccount acc : u.bankAccounts) {
+                if (!(acc instanceof CreditAccount ca)) continue;
+
+                double deuda = ca.creditUsed;
+
+                if (deuda <= 0) {
+                    ca.debtor = false;
+                    ca.monthsInDebt = 0;
+                    ca.creditBlocked = false;
+                    ca.operationsBlocked = false;
+                    continue;
+                }
+
+                double restante = deuda;
+
+                for (BankAccount other : u.bankAccounts) {
+                    if (restante <= 0) break;
+
+                    if (other.balance > 0) {
+                        double pago = Math.min(other.balance, restante);
+                        other.balance -= pago;
+                        restante -= pago;
+                    }
+                }
+
+                if (restante <= 0) {
+                    ca.creditUsed = ((CreditAccount) acc).creditUsed;
+                    ca.debtor = false;
+                    ca.monthsInDebt = 0;
+                    ca.creditBlocked = false;
+                    ca.operationsBlocked = false;
+                    System.out.println("Deuda saldada para " + u.name);
+                } else {
+                    ca.creditUsed = restante;
+                    ca.debtor = true;
+                    ca.monthsInDebt++;
+
+                    if (ca.monthsInDebt == 1) {
+                        ca.creditBlocked = true;
+                        System.out.println(u.name + " entra en deuda (mes 1). Crédito bloqueado.");
+                    } else if (ca.monthsInDebt == 2) {
+                        ca.operationsBlocked = true;
+                        System.out.println(u.name + " sigue en deuda (mes 2). Operaciones bloqueadas.");
+                    } else if (ca.monthsInDebt >= 3) {
+                        System.out.println(" Solicitud judicial de embargo para " + u.name);
+                    }
+                }
+            }
+        }
+
+        FileManager.saveAccounts();
+        FileManager.savePersons(persons);
+
+        System.out.println("Cierre de mes completado.");
     }
 }
