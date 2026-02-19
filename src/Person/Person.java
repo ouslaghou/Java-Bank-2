@@ -32,7 +32,7 @@ public abstract class Person implements Serializable {
         }
     }
 
-    // Contraseña fuerte: 8+ caracteres, mayúscula, minúscula, número
+    // Contraseña  8+ caracteres, mayúscula, minúscula, número
     public boolean checkPassword(String password) {
         if (password == null || password.length() < 8) return false;
 

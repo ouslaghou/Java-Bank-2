@@ -19,9 +19,6 @@ public class AccessScreen implements Serializable {
         rebuildLastIds();
     }
 
-    // ============================
-    // RECONSTRUIR IDs DESDE FICHERO
-    // ============================
     private void rebuildLastIds() {
         int maxClient = 0;
         int maxEmployee = 0;
@@ -50,9 +47,6 @@ public class AccessScreen implements Serializable {
         Manager.lastManagerId = maxManager;
     }
 
-    // ============================
-    // VINCULAR CUENTAS A USUARIOS
-    // ============================
     private void linkAccountsToUsers() {
         for (BankAccount acc : FileManager.accounts) {
             for (Person p : persons) {
@@ -63,9 +57,6 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // MENÚ PRINCIPAL
-    // ============================
     public void menu() {
 
         int option = 0;
@@ -91,9 +82,6 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // REGISTRO DE USUARIOS
-    // ============================
     private void registerUser() {
         System.out.println("\nSelect user type:");
         System.out.println("1. Client");
@@ -116,15 +104,12 @@ public class AccessScreen implements Serializable {
         System.out.println("User registered successfully. ID: " + p.id);
     }
 
-    // ============================
-    // LOGIN
-    // ============================
-    // ============================
     private void login() {
-        System.out.println("\nEnter ID:"); //Añadir ID para logerarse.
+        System.out.println("\nEnter ID:");
         String id = sc.nextLine();
 
         Person p = null;
+
         for (Person x : persons) {
             if (x.id.equals(id)) {
                 p = x;
@@ -132,46 +117,28 @@ public class AccessScreen implements Serializable {
             }
         }
 
-        if (p == null) { //Si pone un ID inventado o vacío no le dejará continuar
+        if (p == null) {
             System.out.println("ID not found.");
             return;
         }
 
-        if (!p.active) { //Si pone el ID que anteriormente un employee o manager a bloqueador no podrá acceder
-            System.out.println("This user is blocked and cannot log in.");
+        System.out.println("Enter password:");
+        String pass = sc.nextLine();
+
+        if (!pass.equals(p.password)) {
+            System.out.println("Wrong password.");
             return;
         }
 
-        int intentos = 0;
+        System.out.println("Login successful. Welcome " + p.name + " (" + p.id + ")");
 
-        while (intentos < 3) {
-            System.out.println("Enter Password:");
-            String pass = sc.nextLine();
-
-            if (!p.password.equals(pass)) {
-                intentos++;
-                if (intentos < 3) {
-                    System.out.println("Wrong password. Te quedan " + (3 - intentos) + " intentos.");
-                } else {
-                    p.active = false;
-                    System.out.println("User blocked: " + p.id);
-                    return;
-                }
-            } else {
-                System.out.println("Login successful. Welcome " + p.name + " (" + p.id + ")");
-                switch (p.role) {
-                    case "manager" -> managerMenu((Manager) p);
-                    case "employee" -> employeeMenu((Employee) p);
-                    case "client" -> clientMenu((User) p);
-                }
-                return;
-            }
+        switch (p.role) {
+            case "manager" -> managerMenu((Manager) p);
+            case "employee" -> employeeMenu((Employee) p);
+            case "client" -> clientMenu((User) p);
         }
     }
 
-    // ============================
-    // MENÚ GERENTE
-    // ============================
     private void managerMenu(Manager m) {
         int option = 0;
 
@@ -184,8 +151,7 @@ public class AccessScreen implements Serializable {
             System.out.println("5. View All Users");
             System.out.println("6. Block User");
             System.out.println("7. Close Month (Credit System)");
-            System.out.println("8. Unlock User");
-            System.out.println("9. Logout");
+            System.out.println("8. Logout");
 
             option = sc.nextInt();
             sc.nextLine();
@@ -198,80 +164,6 @@ public class AccessScreen implements Serializable {
                 case 5 -> showAllUsers();
                 case 6 -> blockUser();
                 case 7 -> closeMonth();
-                case 8 -> unlockUser();
-                case 9 -> {
-                    FileManager.savePersons(persons);
-                    FileManager.saveAccounts();
-                    return;
-                }
-            }
-        }
-    }
-
-    // ============================
-    // MENÚ EMPLEADO
-    // ============================
-    private void employeeMenu(Employee e) {
-        int option = 0;
-
-        while (option != 5) {
-            System.out.println("\n=== EMPLOYEE MENU ===");
-            System.out.println("1. Create Client");
-            System.out.println("2. Create Bank Account");
-            System.out.println("3. View Clients");
-            System.out.println("4. Block Client");
-            System.out.println("5. Unlock Client");
-            System.out.println("6. Logout");
-
-            option = sc.nextInt();
-            sc.nextLine();
-
-            switch (option) {
-                case 1 -> createClient();
-                case 2 -> createBankAccount();
-                case 3 -> showClients();
-                case 4 -> blockClient();
-                case 5 -> unlockUser();
-                case 6 -> {
-                    FileManager.savePersons(persons);
-                    FileManager.saveAccounts();
-                    return;
-                }
-            }
-        }
-    }
-
-    // ============================
-    // MENÚ CLIENTE
-    // ============================
-    private void clientMenu(User u) {
-        int option = 0;
-
-        while (option != 8) {
-            System.out.println("\n=== CLIENT MENU ===");
-            System.out.println("1. View My Accounts");
-            System.out.println("2. Deposit");
-            System.out.println("3. Withdraw");
-            System.out.println("4. Transfer");
-            System.out.println("5. View Account History");
-            System.out.println("6. Solicitar tarjeta");
-            System.out.println("7. Solicitar cuenta de crédito");
-            System.out.println("8. Logout");
-
-            option = sc.nextInt();
-            sc.nextLine();
-
-            switch (option) {
-                case 1 -> showUserAccounts(u);
-                case 2 -> deposit(u);
-                case 3 -> withdraw(u);
-                case 4 -> transfer(u);
-                case 5 -> {
-                    BankAccount acc = selectAccount(u);
-                    acc.showHistory();
-                }
-                case 6 -> solicitarTarjeta(u);
-                case 7 -> solicitarCuentaCredito(u);
                 case 8 -> {
                     FileManager.savePersons(persons);
                     FileManager.saveAccounts();
@@ -281,9 +173,92 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // CREAR USUARIOS
-    // ============================
+    private void employeeMenu(Employee e) {
+        int option = 0;
+
+        while (option != 5) {
+            System.out.println("\n=== EMPLOYEE MENU ===");
+            System.out.println("1. Create Client");
+            System.out.println("2. Create Bank Account");
+            System.out.println("3. View Clients");
+            System.out.println("4. Block Client");
+            System.out.println("5. Logout");
+
+            option = sc.nextInt();
+            sc.nextLine();
+
+            switch (option) {
+                case 1 -> createClient();
+                case 2 -> createBankAccount();
+                case 3 -> showClients();
+                case 4 -> blockClient();
+                case 5 -> {
+                    FileManager.savePersons(persons);
+                    FileManager.saveAccounts();
+                    return;
+                }
+            }
+        }
+    }
+
+    //menu seguros
+
+    private void clientMenu(User u) {
+        int option = 0;
+
+        while (option != 12) {
+            System.out.println("\n=== CLIENT MENU ===");
+            System.out.println("1. View My Accounts");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Transfer");
+            System.out.println("5. View Account History");
+            System.out.println("6. Solicitar tarjeta");
+            System.out.println("7. Solicitar cuenta de crédito");
+            System.out.println("8. Logout");
+            System.out.println("9. Contratar seguro");
+
+            option = sc.nextInt();
+            sc.nextLine();
+
+            switch (option) {
+
+                case 1 -> showUserAccounts(u);
+
+                case 2 -> deposit(u);
+
+                case 3 -> withdraw(u);
+
+                case 4 -> transfer(u);
+
+                case 5 -> {
+                    BankAccount acc = selectAccount(u);
+                    acc.showHistory();
+                }
+
+                case 6 -> solicitarTarjeta(u);
+
+                case 7 -> solicitarCuentaCredito(u);
+
+                case 8 -> {
+                    FileManager.savePersons(persons);
+                    FileManager.saveAccounts();
+                    return;
+                }
+
+                //  CONTRATAR SEGURO
+                case 9 -> {
+                    BankAccount acc = selectAccount(u);
+                    InsuranceService seguroService = new InsuranceService();
+                    seguroService.contratarSeguro(acc);
+                }
+
+
+                default -> System.out.println("Opción no válida.");
+            }
+        }
+    }
+
     private void createClient() {
         Person p = new User("", "", "").register();
         persons.add(p);
@@ -305,9 +280,6 @@ public class AccessScreen implements Serializable {
         System.out.println("Manager created. ID: " + p.id);
     }
 
-    // ============================
-    // CREAR CUENTAS (SIN IBAN REAL)
-    // ============================
     private void createBankAccount() {
         System.out.println("Enter owner ID:");
         String id = sc.nextLine();
@@ -352,9 +324,6 @@ public class AccessScreen implements Serializable {
         System.out.println("IBAN: " + iban);
     }
 
-    // ============================
-    // SOLICITAR CUENTA DE CRÉDITO
-    // ============================
     private void solicitarCuentaCredito(User u) {
         System.out.println("\n=== SOLICITAR CUENTA DE CRÉDITO ===");
         System.out.println("1. 500€");
@@ -393,11 +362,8 @@ public class AccessScreen implements Serializable {
         System.out.println("Cuenta de crédito creada con límite de " + limit + "€");
     }
 
-    // ============================
-    // MOSTRAR USUARIOS
-    // ============================
     private void showAllUsers() {
-        System.out.println("\n=== LIST OF ALL USERS ===");
+        System.out.println("=== LIST OF ALL USERS ===");
 
         for (Person p : persons) {
             System.out.println(
@@ -430,9 +396,6 @@ public class AccessScreen implements Serializable {
         }
     }
 
-    // ============================
-    // BLOQUEAR USUARIOS
-    // ============================
     private void blockUser() {
         System.out.println("Enter ID to block:");
         String id = sc.nextLine();
@@ -461,25 +424,6 @@ public class AccessScreen implements Serializable {
         System.out.println("Client not found.");
     }
 
-    private void unlockUser() {
-        System.out.println("Enter ID to unlock:");
-        String id = sc.nextLine();
-
-        for (Person p : persons) {
-            if (p.id.equals(id)) {
-                p.active = true;
-                System.out.println("User unlocked: " + p.id);
-                return;
-            }
-        }
-
-        System.out.println("User not found.");
-    }
-
-
-    // ============================
-    // OPERACIONES CLIENTE
-    // ============================
     private BankAccount selectAccount(User u) {
         System.out.println("\nSelect account for user " + u.name + " (" + u.id + "):");
 
@@ -522,9 +466,6 @@ public class AccessScreen implements Serializable {
         acc.transfer(amount, acc);
     }
 
-    // ============================
-    // TARJETAS
-    // ============================
     public void solicitarTarjeta(User u) {
         Card c = null;
 
@@ -557,9 +498,6 @@ public class AccessScreen implements Serializable {
         System.out.println("Tarjeta creada correctamente.");
     }
 
-    // ============================
-    // CIERRE DE MES (CRÉDITO)
-    // ============================
     private void closeMonth() {
         System.out.println("\n=== CIERRE DE MES ===");
 
@@ -592,7 +530,7 @@ public class AccessScreen implements Serializable {
                 }
 
                 if (restante <= 0) {
-                    ca.creditUsed = 0;
+                    ca.creditUsed = ((CreditAccount) acc).creditUsed;
                     ca.debtor = false;
                     ca.monthsInDebt = 0;
                     ca.creditBlocked = false;
@@ -610,7 +548,7 @@ public class AccessScreen implements Serializable {
                         ca.operationsBlocked = true;
                         System.out.println(u.name + " sigue en deuda (mes 2). Operaciones bloqueadas.");
                     } else if (ca.monthsInDebt >= 3) {
-                        System.out.println("Solicitud judicial de embargo para " + u.name);
+                        System.out.println(" Solicitud judicial de embargo para " + u.name);
                     }
                 }
             }
