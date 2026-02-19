@@ -254,7 +254,15 @@ public class AccessScreen implements Serializable {
                     seguroService.contratarSeguro(acc);
                 }
 
-                case 10 -> tiendaonline(u);
+                case 10 -> {
+                    tiendaonline(u);
+                }
+
+                case 11 -> {
+                    PanelInversiones panel = new PanelInversiones();
+                    panel.mostrar(u);
+                }
+
 
 
                 default -> System.out.println("Opción no válida.");
